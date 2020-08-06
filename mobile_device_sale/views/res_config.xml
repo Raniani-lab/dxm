@@ -45,6 +45,18 @@
                         </div>
                     </div>
 
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div>
+                            <label for="payment_method_to_negotiate_price"/>
+                            <div class="text-muted">
+                                Payment method if there is price offered.
+                            </div>
+                        </div>
+                        <div>
+                           <field name="payment_method_to_negotiate_price"/>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </field>

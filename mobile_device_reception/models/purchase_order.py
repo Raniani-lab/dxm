@@ -35,3 +35,24 @@ class PurchaseOrder(models.Model):
                     elif residual == 0:
                         payment_state = 'paid'
             record.payment_state = payment_state
+
+    @api.onchange('order_line')
+    def _onchange_order_line_content(self):
+        """
+        Set the reception operation type according to the category of the product.
+        """
+        get_param = self.env['ir.config_parameter'].sudo().get_param
+        root_cat = get_param('mobile_device_reception.mobile_root_category')
+        mobile_op_type = get_param('mobile_device_reception.mobile_reception_op_type')
+        standard_op_type = get_param('mobile_device_reception.standard_op_type')
+        categories = self.order_line.mapped('product_id').mapped('categ_id')
+        mobile_categories = self.env['product.category'].search([('parent_id', 'child_of', int(root_cat))])
+        mobile_flag = False
+        for cat in categories:
+            if cat.id in mobile_categories.ids:
+                mobile_flag = True
+                break
+        if mobile_flag:
+            self.picking_type_id = int(mobile_op_type)
+        else:
+            self.picking_type_id = int(standard_op_type)

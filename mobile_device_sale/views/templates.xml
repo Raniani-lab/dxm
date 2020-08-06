@@ -1095,4 +1095,14 @@
         </xpath>
     </template>
 
+    <template id="cart_confirmation_goto_account_button" inherit_id="website_sale.confirmation">
+        <xpath expr="//div[@id='wrap']/div[hasclass('container')]" position="inside">
+            <div class="row">
+                <div class="col-lg-7 col-md-7 col-xl-7 text-center oct_all_orders_btn">
+                    <a class="btn btn-primary" href="/my/home">View My Account</a>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
 </odoo>
