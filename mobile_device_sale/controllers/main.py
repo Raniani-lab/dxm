@@ -905,3 +905,39 @@ class WebsiteSale(WebsiteSale):
             return request.render("website_sale.cart_popover", values, headers={'Cache-Control': 'no-cache'})
 
         return request.render("website_sale.cart", values)
+
+    @http.route(['/shop/payment'], type='http', auth="user", website=True, sitemap=False)
+    def payment(self, **post):
+        """ Payment step. This page proposes several payment means based on available
+        payment.acquirer. State at this point :
+
+         - a draft sales order with lines; otherwise, clean context / session and
+           back to the shop
+         - no transaction in context / session, or only a draft one, if the customer
+           did go to a payment.acquirer website but closed the tab without
+           paying / canceling
+        """
+        order = request.website.sale_get_order()
+        redirection = self.checkout_redirection(order)
+        if redirection:
+            return redirection
+
+        render_values = self._get_shop_payment_values(order, **post)
+        render_values['only_services'] = order and order.only_services or False
+        # Negotiation Process Check.
+        order_to_negotiate_price = sum(order.order_line.mapped('price_offered'))
+        _logger.info("TO NEGOTIATE: %r", order_to_negotiate_price)
+        get_param = request.env['ir.config_parameter'].sudo().get_param
+        payment_method_id = get_param('mobile_device_sale.payment_method_to_negotiate_price')
+        payment_method = request.env['payment.acquirer'].browse(int(payment_method_id))
+        if payment_method and order_to_negotiate_price > 0:
+            render_values['acquirers'] = payment_method
+        elif payment_method:
+            render_values['acquirers'] = [x for x in render_values['acquirers'] if x != payment_method]
+
+        if render_values['errors']:
+            render_values.pop('acquirers', '')
+            render_values.pop('tokens', '')
+
+        _logger.info("RENDER VALUES: %r", render_values)
+        return request.render("website_sale.payment", render_values)
