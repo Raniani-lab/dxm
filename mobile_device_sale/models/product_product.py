@@ -11,7 +11,7 @@ class ProductProduct(models.Model):
 
     @api.depends_context('pricelist', 'partner', 'quantity', 'uom', 'date', 'no_variant_attributes_price_extra', 'grade')
     def _compute_product_price(self):
-        _logger.info("!!COMPUTING PRODUCT PRICE.....")
+        # _logger.info("!!COMPUTING PRODUCT PRICE.....")
         prices = {}
         pricelist_id_or_name = self._context.get('pricelist')
         if pricelist_id_or_name:
@@ -19,9 +19,9 @@ class ProductProduct(models.Model):
             partner = self.env.context.get('partner', False)
             quantity = self.env.context.get('quantity', 1.0)
             grade = self.env.context.get('grade', 0)
-            _logger.info("GRADE ENV CONTEXT: %r", grade)
-            _logger.info("CONTEXT ON SELF: %r", self._context)
-            _logger.info("CONTEXT ON ENV: %r", self.env.context)
+            # _logger.info("GRADE ENV CONTEXT: %r", grade)
+            # _logger.info("CONTEXT ON SELF: %r", self._context)
+            # _logger.info("CONTEXT ON ENV: %r", self.env.context)
 
             # Support context pricelists specified as list, display_name or ID for compatibility
             if isinstance(pricelist_id_or_name, list):

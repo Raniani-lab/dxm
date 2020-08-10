@@ -950,3 +950,20 @@ class WebsiteSale(WebsiteSale):
 
         _logger.info("RENDER VALUES: %r", render_values)
         return request.render("website_sale.payment", render_values)
+
+    @http.route(['''/shop/get_product_variant_quant_info'''], type='json', auth="user", website=True)
+    def get_product_variant_quant_info(self, product_template_id=None):
+        get_param = request.env['ir.config_parameter'].sudo().get_param
+        location_id = int(get_param('mobile_device_sale.standard_stock_location'))
+        location = request.env['stock.location'].browse(location_id)
+        product_obj = request.env['product.template'].browse(int(product_template_id))
+        return self.get_attribute_quants(product_obj, location)
+
+    def get_attribute_quants(self, product_template_obj, location):
+        att_qty_resume = {}  # {id: qty, id: qty}
+        for att_value in product_template_obj.valid_product_template_attribute_line_ids.product_template_value_ids:
+            pq = 0
+            for i in att_value.ptav_product_variant_ids:
+                pq += sum(request.env['stock.quant']._gather(i, location).mapped('quantity'))
+            att_qty_resume.update({att_value.id: pq})
+        return att_qty_resume

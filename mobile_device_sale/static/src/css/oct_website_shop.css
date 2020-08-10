@@ -175,6 +175,11 @@ label.color_label {
     margin-bottom: 2rem;
 }
 
+/* Variant selector Qty */
+.oct_variant_qty {
+    margin-left: 8px;
+}
+
 /* Responsive */
 
 @media (max-width: 766px) {

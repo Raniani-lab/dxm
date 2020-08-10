@@ -37,11 +37,23 @@
                         <div>
                             <label for="mobile_stock_location"/>
                             <div class="text-muted">
-                                Default website location for sale
+                                Default Mobile Products Sale Location
                             </div>
                         </div>
                         <div>
                            <field name="mobile_stock_location"/>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div>
+                            <label for="standard_stock_location"/>
+                            <div class="text-muted">
+                                Default Standard Products Sale Location
+                            </div>
+                        </div>
+                        <div>
+                           <field name="standard_stock_location"/>
                         </div>
                     </div>
 

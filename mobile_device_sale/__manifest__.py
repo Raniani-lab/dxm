@@ -27,6 +27,7 @@
         'views/sale_order.xml',
         'views/stock_picking.xml',
         'views/templates.xml',
+        'views/sale_variants_template.xml',
     ],
     'installable': True,
     'application': False,
