@@ -171,6 +171,10 @@ label.color_label {
     margin: 0 auto;
 }
 
+.oct_all_orders_btn {
+    margin-bottom: 2rem;
+}
+
 /* Responsive */
 
 @media (max-width: 766px) {

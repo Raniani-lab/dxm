@@ -27,9 +27,11 @@
                                               t-att-title="res_company.name"/>
                                     </a>
                                 </div>
-                                <t t-call="st_ecommerce_theme.ecommerce_header_search"/>
+                                <t t-if="not user_id._is_public()">
+                                    <t t-call="st_ecommerce_theme.ecommerce_header_search"/>
+                                </t>
                                 <div class="header-right">
-                                    <ul id="ecommerce_cart">
+                                    <ul id="ecommerce_cart" t-attf-class="#{'mb16' if user_id._is_public() else None}">
                                         <li class="dropdown">
                                             <t t-if="website.user_id != user_id">
                                                 <a href="#" class="dropdown-toggle"
@@ -58,7 +60,7 @@
                                                 <t t-if="website.user_id != user_id">
                                                     <li>
                                                         <a id="o_logout" class="dropdown-item"
-                                                           t-attf-href="/web/session/logout?redirect=/"
+                                                           t-attf-href="/web/session/logout?redirect=/web/login"
                                                            role="menuitem">
                                                             Logout
                                                         </a>
@@ -68,35 +70,41 @@
 
                                         </li>
 
-                                        <t t-set="website_sale_order"
-                                           t-value="website.sale_get_order()"/>
-                                        <li id="my_cart">
-                                            <a href="/shop/cart" class="nav-link">
-                                                <i class="fa fa-shopping-cart"/>
-                                                My Cart
-                                                <sup t-attf-class="my_cart_quantity badge badge-primary"
-                                                     t-esc="website_sale_order and website_sale_order.cart_quantity or 0"/>
-                                            </a>
-                                        </li>
+                                        <t t-if="not user_id._is_public()">
+
+                                            <t t-set="website_sale_order"
+                                               t-value="website.sale_get_order()"/>
+                                            <li id="my_cart">
+                                                <a href="/shop/cart" class="nav-link">
+                                                    <i class="fa fa-shopping-cart"/>
+                                                    My Cart
+                                                    <sup t-attf-class="my_cart_quantity badge badge-primary"
+                                                         t-esc="website_sale_order and website_sale_order.cart_quantity or 0"/>
+                                                </a>
+                                            </li>
+
+                                        </t>
                                     </ul>
                                 </div>
                             </div>
+                            <t t-if="not user_id._is_public()">
+                                <nav class="navbar navbar-expand-md">
+                                    <button type="button" class="navbar-toggler" data-toggle="collapse"
+                                            data-target="#top_menu_collapse">
+                                        <span class="navbar-toggler-icon fa fa-bars"/>
+                                    </button>
+                                    <div class="collapse navbar-collapse" id="top_menu_collapse">
+                                        <ul class="nav navbar-nav" id="top_menu">
+                                            <li class="divider" t-ignore="true"
+                                                t-if="not user_id._is_public()"/>
+                                            <li class="dropdown" t-ignore="true"
+                                                t-if="not user_id._is_public()"/>
 
-                            <nav class="navbar navbar-expand-md">
-                                <button type="button" class="navbar-toggler" data-toggle="collapse"
-                                        data-target="#top_menu_collapse">
-                                    <span class="navbar-toggler-icon fa fa-bars"/>
-                                </button>
-                                <div class="collapse navbar-collapse" id="top_menu_collapse">
-                                    <ul class="nav navbar-nav" id="top_menu">
-                                        <li class="divider" t-ignore="true"
-                                            t-if="not user_id._is_public()"/>
-                                        <li class="dropdown" t-ignore="true"
-                                            t-if="not user_id._is_public()"/>
+                                        </ul>
+                                    </div>
+                                </nav>
+                            </t>
 
-                                    </ul>
-                                </div>
-                            </nav>
                         </div>
                     </nav>
                 </header>
