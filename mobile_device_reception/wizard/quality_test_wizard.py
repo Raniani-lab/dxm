@@ -130,7 +130,11 @@ class FunctionalTest(models.TransientModel):
             serial_values = []
             for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
                 for colx, cell in enumerate(row, 1):
-                    serial_values.append(cell.value)
+                    if type(cell.value) in [float, int]:
+                        value = str(int(cell.value))
+                    else:
+                        value= cell.value
+                    serial_values.append(value)
             # First check if there is more product qty to supply a lot id
             if lots_done < move_qty:
                 lots_to_fill = move_qty - lots_done
