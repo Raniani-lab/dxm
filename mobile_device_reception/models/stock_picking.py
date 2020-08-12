@@ -228,3 +228,18 @@ class Picking(models.Model):
         inventory_adjustment.action_validate()
         inventory_adjustment._action_done()
         return True
+
+    def split_move_wizard(self):
+        _logger.info("SPLITTING ORDER %r", self.id)
+        q_test_id = self.env['ir.config_parameter'].sudo().get_param('mobile_device_reception.quality_test_op_type')
+        if int(q_test_id) == self.picking_type_id.id:
+            return {
+                'name': ' Split Stock Picking ',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_type': 'form',
+                'res_model': 'split.stock.picking',
+                'view_id': False,
+                'target': 'new',
+                'context': {'default_picking_id': self.id}
+            }

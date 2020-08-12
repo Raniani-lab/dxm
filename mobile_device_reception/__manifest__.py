@@ -33,6 +33,7 @@
         'views/esthetic_quality_test_view.xml',
         'wizard/quality_test_view.xml',
         'wizard/graduation_wizard_view.xml',
+        'wizard/split_stock_picking.xml',
         'report/product_label_template.xml',
         'report/product_label.xml',
     ],
