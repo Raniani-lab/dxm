@@ -148,7 +148,7 @@ class WebsiteSale(WebsiteSale):
 
     def filter_product_by_specs(self, products, **kwargs):
         product_variants = products.mapped('product_variant_id')
-        lots = request.env['stock.production.lot'].search([('product_id', 'in', product_variants.ids)])
+        lots = request.env['stock.production.lot'].sudo().search([('product_id', 'in', product_variants.ids)])
         lots = lots.filtered(lambda l: l.product_qty > 0)
         _logger.info("ALL LOTS: %r", lots)
         lot_filter = self.generate_lot_filter(**kwargs)
@@ -313,7 +313,7 @@ class WebsiteSale(WebsiteSale):
                 else:
                     layout_mode = 'grid'
 
-            grades = request.env['x_grado'].sudo().search([])
+            grades = request.env['x_grado'].sudo().search([('x_studio_website_published', '=', True)])
             device_colors = request.env['x_color'].sudo().search([])
             device_lock_status = request.env['x_bloqueo'].sudo().search([])
             device_logo = request.env['x_logo'].sudo().search([])
@@ -464,7 +464,7 @@ class WebsiteSale(WebsiteSale):
 
         if not grade:
             specs_quant = self.get_product_quants(product_obj.product_variant_id, **specs_filter)
-            grades = request.env['x_grado'].sudo().search([])  # ('x_studio_is_grade_test', '=', True)
+            grades = request.env['x_grado'].sudo().search([('x_studio_website_published', '=', True)])  # ('x_studio_is_grade_test', '=', True)
             for grade in grades:
                 product_price = pricelist_obj.get_product_price(product_obj, 1, partner_id, grade=grade.id, date=today)
                 product_quants = self.get_product_quants(product_obj.product_variant_id, grade=grade.id, **specs_filter)
@@ -523,7 +523,7 @@ class WebsiteSale(WebsiteSale):
 
             specs_quant = self.get_product_quants(product_obj.product_variant_id, **specs_filter)
             specs_filter.pop('grade')
-            grades = request.env['x_grado'].sudo().search([])  # ('x_studio_is_grade_test', '=', True)
+            grades = request.env['x_grado'].sudo().search([('x_studio_website_published', '=', True)])  # ('x_studio_is_grade_test', '=', True)
             for grade in grades:
                 product_price = pricelist_obj.get_product_price(product_obj, 1, partner_id, grade=grade.id, date=today)
                 product_quants = self.get_product_quants(product_obj.product_variant_id, grade=grade.id, **specs_filter)
@@ -768,7 +768,7 @@ class WebsiteSale(WebsiteSale):
         all_product_quants = all_product_quants.filtered(lambda q: q.reserved_quantity == 0 and q.quantity > 0)
         product_lots = all_product_quants.mapped('lot_id')
 
-        grades = request.env['x_grado'].search([])
+        grades = request.env['x_grado'].search([('x_studio_website_published', '=', True)])
         # device_colors = request.env['x_color'].search([])
         device_colors = product_lots.mapped('x_studio_color')
         # device_lock_status = request.env['x_bloqueo'].search([])
