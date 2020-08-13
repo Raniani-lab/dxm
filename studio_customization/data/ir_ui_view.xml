@@ -442,6 +442,7 @@
             <group name="studio_group_f0U3B_left">
               <field name="x_studio_test_value" string="Valor" attrs="{}" required="1"/>
               <field name="x_studio_is_grade_test" string="Disponible en Test de Grado"/>
+              <field name="x_studio_website_published" string="Disponible en la Web"/>
               <field name="x_studio_grade_sku"/>
               <field name="x_studio_descripcin_general" string="Descripción general"/>
             </group>

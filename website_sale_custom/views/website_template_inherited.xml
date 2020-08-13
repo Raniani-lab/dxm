@@ -21,8 +21,8 @@
                            class="input_add_qty"
                            style="font-size: 14px;color: black; max-width: 45px;padding-left: 5px;margin-right: 5px;border-radius: 5px;height: 36px; background-color: #fff;"
                            placeholder="Qty"
-                           t-attf-max="#{(product.qty_available - product.product_variant_id.cart_qty) if product.inventory_availability != 'never' else 1000}"
-                           t-att-data-on-cart="product.product_variant_id.cart_qty"
+                           t-attf-max="#{(product.sudo().qty_available - product.product_variant_id.sudo().cart_qty) if product.sudo().inventory_availability != 'never' else 1000}"
+                           t-att-data-on-cart="product.product_variant_id.sudo().cart_qty"
                            data-min="1" name="add_qty" min="1"  t-att-value="add_qty or 1"/>
                 </div>
         </xpath>

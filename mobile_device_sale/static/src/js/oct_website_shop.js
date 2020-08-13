@@ -11,6 +11,7 @@ odoo.define('oct_website_sale.sale', function (require) {
         ajax.jsonRpc('/shop/get_mobile_device_sell_website', 'call', {}).then(function (data) {
             console.log(data);
             var website_for_sell = data.website_mobile_sell;
+
             if (website_for_sell === website_id) {
 
                 console.log("WEBSITE TO SELL MOBILE DEVICES.....");
@@ -794,8 +795,40 @@ odoo.define('oct_website_sale.sale', function (require) {
             } else {  // END GET WEBSITE FOR SELL
 
                 console.log("OTHER WEBSITE.....")
+                // Get variant attribute qty
+                if ($("#product_detail").length > 0) {
+                    var parent_container = $("#product_detail");
+                    var product_tmpl_id = parent_container.find("input[name='product_template_id']").val();
+                    console.log("PRODUCT DETAIL PAGE")
+                    console.log(product_tmpl_id)
+                    ajax.jsonRpc('/shop/get_product_variant_quant_info', 'call', {
+                            product_template_id: product_tmpl_id
+                        }).then(function (data) {
 
+                        if (data) {
+                            console.log(data);
+                            for (var key in data){
+                                var input = parent_container.find("input[value="+ key + "]")
+                                var select_option = parent_container.find("select.js_variant_change option[value="+ key +"]")
+                                console.log(key)
+                                console.log(input)
+                                console.log(select_option)
 
+                                var content_qty = $("<span class='oct_variant_qty'>(" + data[key] + ")</span>")
+
+                                if (input.length){
+                                    // var content_qty = $("<i class='fa fa-cubes'/> Stock: <span class='oct_variant_qty'>" + data[key] + "</span>")
+                                    content_qty.insertAfter(input.parents('label'))
+                                } else if(select_option.length) {
+                                    console.log("SELECTION OPTION")
+                                    select_option.html( select_option.html() + "("+ data[key] + ")")
+                                }
+
+                            }
+                        }
+                    });
+
+                }
 
 
             } // END OTHERS WEBSITES

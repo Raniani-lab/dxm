@@ -14,6 +14,9 @@
                 <button name="run_quality_test" type="object" string="Run Quality Test"
                 attrs="{'invisible': [('show_quality_test', '=', False)]}"/>
 
+                <button name="split_move_wizard" type="object" string="Split Move"
+                attrs="{'invisible': [('show_quality_test', '=', False)]}"/>
+
                 <button name="run_inventory_adjustment" type="object" string="Adjust Inventory"
                 attrs="{'invisible': [('show_inventory_adjustment', '=', False)]}"/>
 

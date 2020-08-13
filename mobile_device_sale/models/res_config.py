@@ -10,12 +10,16 @@ class ResConfigSettings(models.TransientModel):
                                        help='Picking type for delivery operations')
 
     website_for_sell = fields.Many2one(comodel_name='website',
-                                       string='Website For Sell',
+                                       string='Website For Mobile Sale',
                                        help='Website for sell mobile devices')
 
     mobile_stock_location = fields.Many2one(comodel_name='stock.location',
-                                            string='Default Sale Location',
-                                            help='Default website location for sale')
+                                            string='Default Mobile Products Sale Location',
+                                            help='Default Mobile Products Sale Location')
+
+    standard_stock_location = fields.Many2one(comodel_name='stock.location',
+                                              string='Default Standard Products Sale Location',
+                                              help='Default Standard Products Sale Location')
 
     payment_method_to_negotiate_price = fields.Many2one(comodel_name='payment.acquirer',
                                                         string='Payment Method to Negotiate Price')
@@ -28,7 +32,8 @@ class ResConfigSettings(models.TransientModel):
             delivery_op_type=int(get_param('mobile_device_sale.delivery_op_type')),
             website_for_sell=int(get_param('mobile_device_sale.website_for_sell')),
             payment_method_to_negotiate_price=int(get_param('mobile_device_sale.payment_method_to_negotiate_price')),
-            mobile_stock_location=int(get_param('mobile_device_sale.mobile_stock_location'))
+            mobile_stock_location=int(get_param('mobile_device_sale.mobile_stock_location')),
+            standard_stock_location=int(get_param('mobile_device_sale.standard_stock_location'))
         )
         return res
 
@@ -40,8 +45,10 @@ class ResConfigSettings(models.TransientModel):
         website_for_sell = self.website_for_sell and self.website_for_sell.id or False
         mobile_stock_location = self.mobile_stock_location and self.mobile_stock_location.id or False
         payment_method_to_negotiate_price = self.payment_method_to_negotiate_price and self.payment_method_to_negotiate_price.id or False
+        standard_stock_location = self.standard_stock_location and self.standard_stock_location.id or False
 
         set_param('mobile_device_sale.delivery_op_type', delivery_op_type)
         set_param('mobile_device_sale.website_for_sell', website_for_sell)
         set_param('mobile_device_sale.mobile_stock_location', mobile_stock_location)
         set_param('mobile_device_sale.payment_method_to_negotiate_price', payment_method_to_negotiate_price)
+        set_param('mobile_device_sale.standard_stock_location', standard_stock_location)

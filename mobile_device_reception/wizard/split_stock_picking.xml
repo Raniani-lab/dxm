@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="split_picking_action" model="ir.actions.act_window">
+        <field name="name">Split Picking Action</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">split.stock.picking</field>
+        <field name="view_mode">form</field>
+    </record>
+
+    <record id="split_stock_picking_view" model="ir.ui.view">
+        <field name="name">split.stock.picking.view</field>
+        <field name="model">split.stock.picking</field>
+        <field name="arch" type="xml">
+            <form string="Split Stock Picking">
+                <field name="company_id" invisible="1"/>
+                <field name="picking_id" invisible="1"/>
+                <sheet>
+                    <group style="width: 50%;;">
+                        <field name="responsible"/>
+                    </group>
+                    <group>
+                        <field name="move_line_ids">
+                            <tree editable="bottom" options="{'no_open': True}">
+                                <field name="product_id"/>
+                                <field name="next_move_qty" style="width: 30% !important;"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="split_stock_picking"
+                                string="Split"
+                                type="object"
+                                class="oe_highlight" />
+                    <button special="cancel" name='cancel' string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

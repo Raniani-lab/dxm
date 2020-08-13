@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 brand_manager,brand_manager,product_brand.model_product_brand,base.group_system,1,1,1,1
+brand_users,brand_users,product_brand.model_product_brand,base.group_user,1,1,1,1
+brand_portal,brand_portal,product_brand.model_product_brand,base.group_portal,1,0,0,0
