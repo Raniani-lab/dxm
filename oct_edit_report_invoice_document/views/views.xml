@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <data>
+        <template id="oct_inherit_report_invoice" inherit_id="sale_stock.sale_stock_report_invoice_document">
+            <xpath expr="//table[1]" position="replace">
+                <span>Estoy editando esta seccion de las facturas satisfactoriamente</span>
+<!--                <table groups="sale_stock.group_lot_on_invoice" class="table table-sm" style="width: 50%;"-->
+<!--                       name="invoice_snln_table">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th><span>Product</span></th>-->
+<!--                            <th class="text-right"><span>Quantity</span></th>-->
+<!--                            <th class="text-right"><span>SN/LN</span></th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                        <t t-foreach="lot_values" t-as="snln_line">-->
+<!--                            <tr>-->
+<!--                                <td><t t-esc="snln_line['product_name']"/></td>-->
+<!--                                <td class="text-right">-->
+<!--                                    <t t-esc="snln_line['quantity']"/>-->
+<!--                                    <t t-esc="snln_line['uom_name']" groups="uom.group_uom"/>-->
+<!--                                </td>-->
+<!--                                <td class="text-right"><t t-esc="snln_line['lot_name']"/></td>-->
+<!--                            </tr>-->
+<!--                        </t>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+            </xpath>
+        </template>
+    </data>
+</odoo>
