@@ -9,7 +9,7 @@
         Long description of module's purpose
     """,
 
-    'author': "sergiowebcuba",
+    'author': "Pastor E. Sanchez | Octupus",
     'website': "http://www.octupus.es",
 
     # Categories can be used to filter modules in modules listing
