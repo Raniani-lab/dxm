@@ -36,6 +36,7 @@
         'wizard/split_stock_picking.xml',
         'report/product_label_template.xml',
         'report/product_label.xml',
+        'views/stock_quant.xml'
     ],
     'installable': True,
     'application': False,
