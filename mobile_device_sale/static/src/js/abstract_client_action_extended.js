@@ -1,21 +1,47 @@
 odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
     'use strict';
     var ClientAction = require('stock_barcode.ClientAction')
+    var LinesWidget = require('stock_barcode.LinesWidget');
 
     var ClientActionExtended = ClientAction.include({
 
+
         willStart: function () {
             var self = this;
+            this.scannedCount = 0;
             var recordId = this.actionParams.pickingId || this.actionParams.inventoryId;
             return Promise.all([
                 self._super.apply(self, arguments),
                 self._getState(recordId),
                 self._getProductBarcodes(),
                 self._getLocationBarcodes(),
-                self._getPermittedLotBarcodes(this.actionParams.pickingId)
+                self._getPermittedLotBarcodes(this.actionParams.pickingId),
+                self._getMedia()
             ]).then(function () {
                 return self._loadNomenclature();
             });
+        },
+
+        /**
+         * Actualize scanned number
+         * **/
+        _change_scanned_products: function(product){
+            console.log("CHECKING PRODUCT QUANTITY SCANNED")
+            var max_qty = this.ProductsQuantity[product.id]['quantity'];
+            console.log("max_qty:")
+            console.log(max_qty)
+            console.log('scannedCount')
+            console.log(this.scannedCount)
+            if (this.scannedCount < max_qty){
+                this.scannedCount += 1;
+                var btn_cnt = this.$('#scan_count');
+                btn_cnt.text(this.scannedCount)
+                this.ProductsQuantity[product.id]['scanned_qty'] += 1
+                return true
+            } else {
+                return false
+            }
+
         },
 
         /**
@@ -30,9 +56,20 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 'method': 'get_similar_barcode',
                 'args': [picking_id],
             }).then(function (res) {
-                self.PermittedLotBarcodes = res;
+                console.log(res);
+                self.PermittedLotBarcodes = res.lots;
+                self.ProductsQuantity = res.products_quants;
             });
 
+        },
+
+        /**
+         * Get media elements for play events sounds
+         * @param
+         * @return Audio Object
+         * **/
+        _getMedia: function(){
+            this.error_sound = new Audio('/mobile_device_sale/static/src/sound/error.mp3');
         },
 
         /**
@@ -63,6 +100,9 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                     ) {
                     if (this.actionParams.model === 'stock.picking') {
                         line.qty_done += params.product.qty || 1;
+                        // Update scanned count
+                        // console.log(this.scannedCount)
+                        this._change_scanned_products(params.product);
                         if (params.package_id) {
                             line.package_id = params.package_id;
                         }
@@ -88,8 +128,21 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                     console.log(permitted_lot)
                     if (permitted_lot){
                         console.log("PERMITTED LOT")
+                        // Update scanned count
+                        // console.log(this.scannedCount)
+                        if (this._change_scanned_products(params.product)){
+                            console.log("ALL OK")
+                        } else {
+                            console.log("MAX NUMBER OF BARCODE REACHED")
+                            this.error_sound.play();
+                            return Promise.reject("MAX NUMBER OF BARCODE REACHED")
+                        }
+
+                        //console.log(LinesWidget)
+                        //this._reloadLineWidget(this.currentPageIndex);
                     } else {
                         console.log("LOT NOT PERMITTED")
+                        this.error_sound.play();
                         return Promise.reject("Lot not match specs")
                     }
 

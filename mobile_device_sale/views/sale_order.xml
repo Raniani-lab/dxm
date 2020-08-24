@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
                 <field name="product_grade"/>
+                <field name="color_relation"/>
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                 <field name="price_offered"/>
@@ -16,6 +17,33 @@
                 <button name="action_show_line_specs" string="Product Line Specifications"
                         type="object" icon="fa-adjust" width="0.1"/> <!-- options='{"warn": true}' -->
             </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Specifications Brief">
+                    <field name="specs_ids">
+
+                        <tree>
+                            <field name="product_id"/>
+                            <field name="quantity" string="Quantity"/>
+                            <field name="grade"/>
+                            <field name="color"/>
+                            <field name="lock_status"/>
+                            <field name="logo" string="Welcome Logo"/>
+                            <field name="charger" string="SPECS"/>
+                            <field name="applications"/>
+
+                            <!--<groupby name="product_id">
+                              <field name="name"/>
+                                <button type="edit" name="edit" string="Edit"/>
+                                <button type="object" name="my_method" string="Button1"/>
+                            </groupby>-->
+
+                        </tree>
+
+                    </field>
+                </page>
+            </xpath>
+
         </field>
     </record>
 

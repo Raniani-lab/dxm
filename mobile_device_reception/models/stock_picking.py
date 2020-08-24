@@ -18,6 +18,10 @@ class Picking(models.Model):
 
     inventory_adjusted = fields.Boolean(string="Inventory Adjustment")
 
+    from_split = fields.Boolean(string="From Move Splitted")
+
+    master_split = fields.Boolean(string="Is Master Split")
+
     def _show_inventory_adjustment(self):
         q_test_id = self.env['ir.config_parameter'].sudo().get_param('mobile_device_reception.quality_test_op_type')
         for picking in self:
@@ -28,7 +32,7 @@ class Picking(models.Model):
                         show_adjustment = True
                 elif q_test_id == self.picking_type_id.id and not picking.inventory_adjusted:
                     show_adjustment = True
-            picking['show_inventory_adjustment'] = show_adjustment
+            picking['show_inventory_adjustment'] = True  # show_adjustment
 
     def _show_quality_test(self):
         q_test_id = self.env['ir.config_parameter'].sudo().get_param('mobile_device_reception.quality_test_op_type')
@@ -135,17 +139,20 @@ class Picking(models.Model):
             }
 
     def run_inventory_adjustment(self):
-        _logger.info("ADJUSTING INVENTORY")
+        _logger.info("ADJUSTING INVENTORY FOR %r", self.name)
         if not self.is_locked:
             self.action_toggle_is_locked()
         if self.state == 'draft':
             self.action_confirm()
         products_adjusted = 0
+        message = self.env['message.popup']
+
         for move in self.move_lines:
             if move.move_orig_ids:
+                _logger.info("LINE WITH ORIGIN")
                 last_move_qty = move.move_orig_ids.product_uom_qty
                 now_qty = move.product_uom_qty
-                if last_move_qty != now_qty:
+                if last_move_qty != now_qty or move.picking_id.master_split or move.picking_id.from_split:
                     _logger.info("LINE %r CHANGED QTY", move.id)
                     if self.create_inventory_adjustment(move):
                         next_move = move.move_dest_ids[0]
@@ -160,40 +167,35 @@ class Picking(models.Model):
             else:
                 if self.create_inventory_adjustment(move):
                     products_adjusted += 1
-                # new line added
-                # next_pickings = self.move_lines.mapped('move_dest_ids').mapped('picking_id').sorted(key='id')
-                # if len(next_pickings) > 1:
-                #     for pick in next_pickings[1:]:
-                #         _logger.info("CANCELING PICKING ID: %r", pick.id)
-                #         pick.action_cancel()
-                #         pick.unlink()
-                # next_picking = next_pickings[0]
-                # if self.create_inventory_adjustment(move):
-                #     # create new move in next picking
-                #     new_move = self.env['stock.move'].create({
-                #         'name': move.product_id.display_name,
-                #         'product_id': move.product_id.id,
-                #         'product_uom_qty': move.product_uom_qty,
-                #         'product_uom': move.product_uom.id,
-                #         'description_picking': move.description_picking,
-                #         'location_id': move.location_id.id,
-                #         'location_dest_id': move.location_dest_id.id,
-                #         'picking_id': next_picking.id,
-                #         'picking_type_id': next_picking.picking_type_id.id,
-                #         'restrict_partner_id': next_picking.owner_id.id,
-                #         'company_id': next_picking.company_id.id,
-                #         'warehouse_id': move.warehouse_id.id
-                #     })
-                #     move.write({'move_dest_ids': [new_move.id]})
-                # next_picking.action_confirm()
         self.action_assign()
-        self.write({'inventory_adjusted': True})
-        message = self.env['message.popup']
-        term = message.pluralize(products_adjusted, 'product', 'products')
-        return message.popup(message="Inventory adjustment successfully for %s" % term)
+        if products_adjusted > 0:
+            self.write({'inventory_adjusted': True})
+            term = message.pluralize(products_adjusted, 'product', 'products')
+            msg = "Inventory adjustment successfully for %s" % term
+        else:
+            msg = "No operations lines modified to adjust"
+        return message.popup(message=msg)
 
     def create_inventory_adjustment(self, move):
         _logger.info("CREATING INVENTORY ADJUSTMENT")
+
+        qty = 0
+        if move.picking_id.master_split or move.picking_id.from_split:
+            _logger.info("ADJUSTING SPLITTED PICKING")
+            total_product_qty = self._get_product_total_qty_splitted_move(move.picking_id, move.product_id)
+            _logger.info("TOTAL PRODUCT QTY ON ALL SPLITTED PICKINGS: %r", total_product_qty)
+            if move.move_orig_ids:
+                if total_product_qty == move.move_orig_ids[0].product_uom_qty:
+                    return False
+                qty = move.move_orig_ids[0].product_uom_qty - total_product_qty
+            else:
+                qty = -(move.product_uom_qty)
+        else:
+            if move.move_orig_ids:
+                qty = move.move_orig_ids[0].product_uom_qty - move.product_uom_qty
+            else:
+                qty = -move.product_uom_qty
+
         inventory_adjustment = self.env['stock.inventory'].create({
             'name': 'Automatic Adjustment For: ' + move.product_id.name,
             'company_id': move.company_id.id,
@@ -202,15 +204,18 @@ class Picking(models.Model):
         })
         _logger.info("STOCK INVENTORY ID: %r", inventory_adjustment.id)
         inventory_adjustment._action_start()
-        qty = move.product_uom_qty
-        _logger.info("NOW QTY: %r", qty)
+
+        _logger.info("QTY: %r", qty)
+
         if inventory_adjustment.line_ids:
             _logger.info("ADJUSTMENT WITH LINES")
             line_id = inventory_adjustment.line_ids.filtered(lambda l: not l.prod_lot_id)
-            _logger.info("LINE ID: %r", line_id.id)
+            _logger.info("LINE IDs: %r", line_id.ids)
             if len(line_id) == 1:
-                line_id.write({'product_qty': qty})
                 _logger.info("ONE LINE")
+                _logger.info("LINE QTY: %r", line_id.product_qty)
+                line_id.write({'product_qty': line_id.product_qty - qty})
+
             else:
                 raise ValidationError(
                     "The product %s have many adjustments to do, please run the inventory adjustment manually" %
@@ -221,7 +226,7 @@ class Picking(models.Model):
                 'inventory_id': inventory_adjustment.id,
                 'product_id': move.product_id.id,
                 'product_uom_id': move.product_uom.id,
-                'product_qty': qty,
+                'product_qty': -(qty) if qty < 0 else qty,
                 'location_id': move.location_id.id,
                 'company_id': move.company_id.id
             })
@@ -230,7 +235,11 @@ class Picking(models.Model):
         return True
 
     def split_move_wizard(self):
-        _logger.info("SPLITTING ORDER %r", self.id)
+        _logger.info("SPLITTING PICKING %r", self.id)
+        if len(self.move_line_ids.mapped('lot_id')) > 0:
+            raise ValidationError("Lines with lots associates can't be unreserved")
+        if self.from_split:
+            raise ValidationError("This is an splitted move. Splitted move can't be splitted again")
         q_test_id = self.env['ir.config_parameter'].sudo().get_param('mobile_device_reception.quality_test_op_type')
         if int(q_test_id) == self.picking_type_id.id:
             return {
@@ -243,3 +252,18 @@ class Picking(models.Model):
                 'target': 'new',
                 'context': {'default_picking_id': self.id}
             }
+
+    def _get_product_total_qty_splitted_move(self, picking, product):
+        master_picking = None
+        if picking.master_split:
+            master_picking = picking
+        elif picking.from_split:
+            master_picking = self.env['stock.picking'].search([('name', '=', picking.origin)])
+        children = self.env['stock.picking'].search([('origin', '=', master_picking.name)])
+        product_total_qty = 0
+        pickings = master_picking + children
+        for pick in pickings:
+            line = pick.move_lines.filtered(lambda m: m.product_id == product)
+            line_qty = line.product_uom_qty
+            product_total_qty += line_qty
+        return product_total_qty
