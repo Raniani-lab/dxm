@@ -17,7 +17,34 @@
                     <field name="cargador"/>
                     <field name="aplicaciones"/>
                 </xpath>
+                 <xpath expr="//field[@name='inventory_quantity']" position="replace">
+                    <field name="inventory_quantity" string="Cantidad a Mano" readonly="0" sum="Total Cantidad a Mano" />
+                </xpath>
+                <xpath expr="//field[@name='reserved_quantity']" position="replace">
+                     <field name="reserved_quantity" string="Reservado" optional="hide" sum="Total Reservado"/>
+                </xpath>
             </field>
         </record>
+        <record id="stock_quant_search_inherit" model="ir.ui.view">
+            <field name="name">stock.quant.search.inherit</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.quant_search_view"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='owner_id']" position="after">
+                     <field name="revision_grado"/>
+                     <field name="color"/>
+                </xpath>
+                 <xpath expr="//filter[@name='reserved']" position="after">
+                    <filter name="grado_nuevo" string="Grado Nuevo" domain="[('revision_grado.x_name', '=', 'Nuevo')]"/>
+                    <filter name="grado_a" string="Grado A" domain="[('revision_grado.x_name', '=', 'A')]"/>
+                    <filter name="grado_b" string="Grado B" domain="[('revision_grado.x_name', '=', 'B')]"/>
+                    <filter name="grado_c" string="Grado C" domain="[('revision_grado.x_name', '=', 'C')]"/>
+                    <filter name="grado_14" string="Grado 14D" domain="[('revision_grado.x_name', '=', '14 DÍAS')]"/>
+                </xpath>
+
+            </field>
+        </record>
+
     </data>
 </odoo>
