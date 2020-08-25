@@ -12,7 +12,9 @@ class ProductLineSpecs(models.Model):
     _description = 'Product line specifications'
 
     stock_move_line_id = fields.Many2one(comodel_name='stock.move')
+    order_id = fields.Many2one(comodel_name='sale.order')
     sale_order_line_id = fields.Many2one(comodel_name='sale.order.line')
+    product_id = fields.Many2one(comodel_name='product.product', related="sale_order_line_id.product_id")
     grade = fields.Many2one('x_grado', related='sale_order_line_id.product_grade')
     color = fields.Many2one(comodel_name='x_color', string='Color')
     lock_status = fields.Many2one(comodel_name='x_bloqueo', string='Lock')

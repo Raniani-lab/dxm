@@ -13,6 +13,14 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
+    # order_line_copy = fields.Many2one(comodel_name="sale.order.line", related="order_line")
+    specs_ids = fields.One2many('product.line.specs', 'order_id',
+                                      string='SPECS Lines', compute="_get_specs_lines")
+
+    def _get_specs_lines(self):
+        for order in self:
+            order.specs_ids = [(6, 0, order.order_line.mapped('line_specs_ids').ids)]
+
     def _cart_find_product_line(self, product_id=None, line_id=None, grade=0):
         """Find the cart line matching the given parameters.
 
@@ -326,6 +334,18 @@ class SaleOrderLine(models.Model):
     product_grade = fields.Many2one(comodel_name='x_grado', string='Grade')
     line_specs_ids = fields.One2many(comodel_name='product.line.specs', inverse_name='sale_order_line_id')
     price_offered = fields.Monetary(string="Price Offered")
+    color_relation = fields.Char(string="Colors", compute="_get_specs_colors")
+
+    def _get_specs_colors(self):
+        for line in self:
+            colors = line.line_specs_ids.mapped('color.x_name')
+            if len(colors) > 1:
+                line.color_relation = "%s Colores" % len(colors)
+            elif len(colors) == 1:
+                line.color_relation = colors[0]
+            else:
+                line.color_relation = ""
+
 
     def match_product_specs(self, **kwargs):
         _logger.info("MATCH SPECS KW ARGS: %r", kwargs)

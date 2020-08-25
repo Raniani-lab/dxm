@@ -3,6 +3,7 @@
     <template id="oct_assets_backend" name="Oct Sale Assets Backend" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/mobile_device_sale/static/src/js/abstract_client_action_extended.js"/>
+            <link rel="stylesheet" href="/mobile_device_sale/static/src/css/oct_backend.css"/>
         </xpath>
     </template>
 

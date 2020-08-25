@@ -29,6 +29,9 @@
         'views/templates.xml',
         'views/sale_variants_template.xml',
     ],
+    'qweb': [
+        "static/src/xml/qweb_template_inherit.xml"
+    ],
     'installable': True,
     'application': False,
 }

@@ -33,7 +33,8 @@ class SplitStockPicking(models.TransientModel):
                 'move_lines': [],
                 'move_line_ids': [],
                 'origin': picking.name,
-                'user_id': self.responsible.id
+                'user_id': self.responsible.id,
+                'from_split': True
             })
             for line in self.move_line_ids:
                 _logger.info("SPLITTING %s UNITS FOR PRODUCT %s" % (line.next_move_qty, line.product_id))
@@ -55,6 +56,7 @@ class SplitStockPicking(models.TransientModel):
             picking.do_unreserve()
             picking.action_assign()
             new_picking.action_assign()
+            picking.write({'master_split': True})
         else:
             raise ValidationError("You must provide at lest one line with a product and a quantity to split")
         return
