@@ -33,7 +33,7 @@ class SplitStockPicking(models.TransientModel):
                 'move_lines': [],
                 'move_line_ids': [],
                 'origin': picking.name,
-                'user_id': self.responsible.id,
+                'partner_id': self.responsible.partner_id.id,
                 'from_split': True
             })
             for line in self.move_line_ids:
