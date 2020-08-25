@@ -19,8 +19,8 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 self._getPermittedLotBarcodes(this.actionParams.pickingId),
                 self._getMedia()
             ]).then(function () {
-                var btn_cnt = self.$('#scan_count');
-                btn_cnt.text(self.initialScanned)
+                // var btn_cnt = self.$('#scan_count');
+                // btn_cnt.text(self.initialScanned)
                 return self._loadNomenclature();
             });
         },
@@ -271,6 +271,13 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 self.scannedLines.push(res.lineDescription.virtual_id);
                 linesActions.push([self.linesWidget.addProduct, [res.lineDescription, self.actionParams.model]]);
             } else {
+                if (typeof res.has_error != "undefined"){
+                    if (res.has_error){
+                        self.error_sound.play();
+                        return Promise.reject(res.message);
+                    }
+
+                }
                 if (self.scannedLines.indexOf(res.lineDescription.id) === -1) {
                     self.scannedLines.push(res.lineDescription.id);
                 }
@@ -357,6 +364,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
             var self = this;
             var line = this._findCandidateLineToIncrement(params);
             var isNewLine = false;
+            var response
             if (line) {
                 // Update the line with the processed quantity.
                 if (params.product.tracking === 'none' ||
@@ -371,8 +379,8 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                             console.log("ALL OK")
                         } else {
                             console.log("MAX NUMBER OF BARCODE REACHED")
-                            this.error_sound.play();
-                            return Promise.reject("MAX NUMBER OF BARCODE REACHED")
+                            response = {'has_error':true,'message':'MAX NUMBER OF BARCODE REACHED'}
+                            return response
                         }
                         if (params.package_id) {
                             line.package_id = params.package_id;
@@ -405,16 +413,17 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                             console.log("ALL OK")
                         } else {
                             console.log("MAX NUMBER OF BARCODE REACHED")
-                            this.error_sound.play();
-                            return Promise.reject("MAX NUMBER OF BARCODE REACHED")
+
+                            response = {'has_error':true,'message':'MAX NUMBER OF BARCODE REACHED'}
+                            return response
                         }
 
                         //console.log(LinesWidget)
                         //this._reloadLineWidget(this.currentPageIndex);
                     } else {
                         console.log("LOT NOT PERMITTED")
-                        this.error_sound.play();
-                        return Promise.reject("Lot not match specs")
+                        response = {'has_error':true,'message':'Lot not match specs'}
+                        return response
                     }
 
                 }
