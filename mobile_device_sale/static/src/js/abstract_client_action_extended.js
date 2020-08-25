@@ -274,6 +274,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 if (typeof res.has_error != "undefined"){
                     if (res.has_error){
                         self.error_sound.play();
+                        errorMessage = _t(res.message);
                         return Promise.reject(res.message);
                     }
 
