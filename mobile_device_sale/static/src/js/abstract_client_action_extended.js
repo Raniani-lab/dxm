@@ -19,6 +19,8 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 self._getPermittedLotBarcodes(this.actionParams.pickingId),
                 self._getMedia()
             ]).then(function () {
+                var btn_cnt = self.$('#scan_count');
+                btn_cnt.text(self.initialScanned)
                 return self._loadNomenclature();
             });
         },
@@ -60,6 +62,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 console.log(res);
                 self.PermittedLotBarcodes = res.lots;
                 self.ProductsQuantity = res.products_quants;
+                self.initialScanned = res.total_scanned;
             });
 
         },
@@ -364,7 +367,13 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                         line.qty_done += params.product.qty || 1;
                         // Update scanned count
                         // console.log(this.scannedCount)
-                        this._change_scanned_products(params.product);
+                        if (this._change_scanned_products(params.product)){
+                            console.log("ALL OK")
+                        } else {
+                            console.log("MAX NUMBER OF BARCODE REACHED")
+                            this.error_sound.play();
+                            return Promise.reject("MAX NUMBER OF BARCODE REACHED")
+                        }
                         if (params.package_id) {
                             line.package_id = params.package_id;
                         }
