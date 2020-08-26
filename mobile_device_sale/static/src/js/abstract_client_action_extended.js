@@ -398,12 +398,17 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
 
                 // Check if barcode pass lines specifications
                 if (this.actionParams.model === 'stock.picking'){
-
-                    var permitted_lot = _.find(self.PermittedLotBarcodes, function (lot) {
+                    if (self.PermittedLotBarcodes.length){
+                        var permitted_lot = _.find(self.PermittedLotBarcodes, function (lot) {
                         console.log('LOT')
                         console.log(lot)
                         return lot === params.lot_id
-                    })
+                         })
+                    }else {
+                        var permitted_lot = true
+                    }
+
+
                     console.log("PERMITTED LOG.....")
                     console.log(permitted_lot)
                     if (permitted_lot){
