@@ -376,7 +376,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                         line.qty_done += params.product.qty || 1;
                         // Update scanned count
                         // console.log(this.scannedCount)
-                        if (this._change_scanned_products(params.product)){
+                        if (this._change_scanned_products(params.product) || this.currentState.picking_type_code =='internal'){
                             console.log("ALL OK")
                         } else {
                             console.log("MAX NUMBER OF BARCODE REACHED")
@@ -415,7 +415,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                         console.log("PERMITTED LOT")
                         // Update scanned count
                         // console.log(this.scannedCount)
-                        if (this._change_scanned_products(params.product)){
+                        if (this._change_scanned_products(params.product) || this.currentState.picking_type_code =='internal'){
                             console.log("ALL OK")
                         } else {
                             console.log("MAX NUMBER OF BARCODE REACHED")
