@@ -408,21 +408,21 @@
 
                     <div style="display: block; width: 50%; float: left; text-align: center; margin-top: 5px;">
                         <img t-att-src="web_base_url + '/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %
-                        ('Code128', lot.name, 200, 50)" style="width: 200px; height: 50px;"/>
+                        ('Code128', lot.name, 400, 50)" style="width: 400px; height: 50px;"/>
                         <br/>
                         <div style="width: 100%; display: block; text-align: center; margin-top: 5px;">
                             <span t-field="lot.name"/>
                         </div>
                     </div>
 
-                    <div style="display: block; width: 50%; float: left; text-align: center; margin-top: 5px;">
+                    <!--<div style="display: block; width: 50%; float: left; text-align: center; margin-top: 5px;">
                         <img t-att-src="web_base_url + '/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %
                         ('Code128', lot.x_studio_lot_sku, 200, 50)" style="width: 200px; height: 50px;"/>
                         <br/>
                         <div style="width: 100%; display: block; text-align: center; margin-top: 5px;">
                             <span t-field="lot.x_studio_lot_sku"/>
                         </div>
-                    </div>
+                    </div>-->
 
                 </div>
 
