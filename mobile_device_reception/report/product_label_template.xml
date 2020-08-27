@@ -404,11 +404,10 @@
 
 
 
-                <div style="display: block; width: 95%; float: left; text-align: center;">
+                <div style="display: block; width: 95%;float:left; text-align: center;">
 
-                    <div style="display: block; width: 50%; float: left; text-align: center; margin-top: 5px;">
-                        <img t-att-src="web_base_url + '/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %
-                        ('Code128', lot.name, 400, 50)" style="width: 400px; height: 50px;"/>
+                    <div style="display: block; width: 100%; text-align: center; margin-top: 5px;">
+                        <img t-att-src="web_base_url + '/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %                         ('Code128', lot.name, 400, 50)" style="width:400px; height: 50px"/>
                         <br/>
                         <div style="width: 100%; display: block; text-align: center; margin-top: 5px;">
                             <span t-field="lot.name"/>
