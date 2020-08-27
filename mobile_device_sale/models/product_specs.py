@@ -11,12 +11,20 @@ class ProductLineSpecs(models.Model):
     _name = 'product.line.specs'
     _description = 'Product line specifications'
 
+    def _get_grade_colors_domain(self):
+        line_id = self.env.context.get('active_id')
+        line = self.env['sale.order.line'].browse(line_id)
+        product = line.product_id
+        grade = line.product_grade
+        colors = self.get_quant_colors(product, grade.id)
+        return [('id', 'in', colors.ids)]
+
     stock_move_line_id = fields.Many2one(comodel_name='stock.move')
     order_id = fields.Many2one(comodel_name='sale.order')
     sale_order_line_id = fields.Many2one(comodel_name='sale.order.line')
     product_id = fields.Many2one(comodel_name='product.product', related="sale_order_line_id.product_id")
     grade = fields.Many2one('x_grado', related='sale_order_line_id.product_grade')
-    color = fields.Many2one(comodel_name='x_color', string='Color')
+    color = fields.Many2one(comodel_name='x_color', string='Color', domain=lambda self: self._get_grade_colors_domain())
     lock_status = fields.Many2one(comodel_name='x_bloqueo', string='Lock')
     logo = fields.Many2one(comodel_name='x_logo', string="Logo")
     charger = fields.Many2one(comodel_name='x_cargador', string="Charger")
@@ -26,6 +34,21 @@ class ProductLineSpecs(models.Model):
     quantity = fields.Integer(string='Specification Quantity')
     filter_executions = fields.Integer(string='Executions')
     # available_qty = fields.Integer(string='Available')
+
+    @api.onchange('grade')
+    def change_grade(self):
+        _logger.info("GRADE ONCHANGE.....")
+
+    def get_quant_colors(self, product_id, grade):
+        _logger.info("FINDING PRODUCT COLORS.....")
+        get_param = self.env['ir.config_parameter'].sudo().get_param
+        default_location_id = get_param('mobile_device_sale.mobile_stock_location')
+        stock_location = self.env['stock.location'].browse(int(default_location_id))
+        all_product_quants = self.env['stock.quant'].sudo()._gather(product_id, stock_location)
+        lot_filter = 'q.lot_id.x_studio_revision_grado.id == %s' % grade
+        quants_filtered = all_product_quants.filtered(lambda q: eval(lot_filter))
+
+        return quants_filtered.mapped('lot_id').mapped('x_studio_color')
 
     def create_specs_filter_values(self):
         _logger.info("TRYING TO GET SPECS FILTER")

@@ -686,12 +686,23 @@ class WebsiteSale(WebsiteSale):
     def cart_update_json(self, product_id, line_id=None, add_qty=None, set_qty=None, display=True, **kwargs):
         """This route is called when changing quantity from the cart or adding
         a product from the wishlist."""
+        _logger.info("PRODUCT ID ON CART UPDATE JSON: %r", product_id)
         order = request.website.sale_get_order(force_create=1, **kwargs)
         if order.state != 'draft':
             request.website.sale_reset()
             return {}
 
+        # website_for_sell = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.website_for_sell')
+        # current_website = request.env['website'].get_current_website().id
+        # if int(website_for_sell) != current_website:
+        #     product = request.env['product.product'].browse(product_id)
+        #     product_qty = product.qty_available
+        #     cart_qty = order.cart_quantity
+        #     if product_qty <= cart_qty or set_qty > (product_qty - cart_qty):
+        #         raise ValidationError("No more products in stock")
+
         value = order._cart_update(product_id=product_id, line_id=line_id, add_qty=add_qty, set_qty=set_qty, **kwargs)
+
 
         if not order.cart_quantity:
             request.website.sale_reset()
@@ -751,9 +762,7 @@ class WebsiteSale(WebsiteSale):
         view_track = request.website.viewref("website_sale.product").track
 
         # get quants to filter available specs
-        company_id = request.env.user.company_id
-        default_location_id = request.env['ir.config_parameter'].sudo().get_param(
-            'mobile_device_sale.mobile_stock_location')
+        default_location_id = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.mobile_stock_location')
         stock_location = request.env['stock.location'].browse(int(default_location_id))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product.product_variant_id, stock_location)
         all_product_quants = all_product_quants.filtered(lambda q: q.reserved_quantity == 0 and q.quantity > 0)
@@ -941,6 +950,48 @@ class WebsiteSale(WebsiteSale):
 
         _logger.info("RENDER VALUES: %r", render_values)
         return request.render("website_sale.payment", render_values)
+
+    @http.route('/shop/payment/validate', type='http', auth="user", website=True, sitemap=False)
+    def payment_validate(self, transaction_id=None, sale_order_id=None, **post):
+        """ Method that should be called by the server when receiving an update
+        for a transaction. State at this point :
+
+         - UDPATE ME
+        """
+
+        if sale_order_id is None:
+            order = request.website.sale_get_order()
+        else:
+            order = request.env['sale.order'].sudo().browse(sale_order_id)
+            assert order.id == request.session.get('sale_last_order_id')
+
+        if transaction_id:
+            tx = request.env['payment.transaction'].sudo().browse(transaction_id)
+            assert tx in order.transaction_ids()
+        elif order:
+            tx = order.get_portal_last_transaction()
+        else:
+            tx = None
+
+        if not order or (order.amount_total and not tx):
+            return request.redirect('/shop')
+        if order and not order.amount_total and not tx:
+            order.with_context(send_email=True).action_confirm()
+            return request.redirect(order.get_portal_url())
+
+        # clean context and session, then redirect to the confirmation page
+        request.website.sale_reset()
+        if tx and tx.state == 'draft':
+            return request.redirect('/shop')
+        # Confirm order if not negotiate price and is transaction
+        get_param = request.env['ir.config_parameter'].sudo().get_param
+        negotiation_acquirer_id = int(get_param('mobile_device_sale.payment_method_to_negotiate_price'))
+        if tx.acquirer_id.provider == 'transfer' and tx.acquirer_id.id != negotiation_acquirer_id:
+            order.with_context(send_email=True).action_confirm()
+
+        PaymentProcessing.remove_payment_transaction(tx)
+
+        return request.redirect('/shop/confirmation')
 
     @http.route(['''/shop/get_product_variant_quant_info'''], type='json', auth="user", website=True)
     def get_product_variant_quant_info(self, product_template_id=None):
