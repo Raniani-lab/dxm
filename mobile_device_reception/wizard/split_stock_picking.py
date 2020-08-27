@@ -34,6 +34,7 @@ class SplitStockPicking(models.TransientModel):
                 'move_line_ids': [],
                 'origin': picking.name,
                 'partner_id': self.responsible.partner_id.id,
+                'user_id': self.responsible.id,
                 'from_split': True
             })
             for line in self.move_line_ids:
@@ -49,9 +50,10 @@ class SplitStockPicking(models.TransientModel):
                             line.next_move_qty,
                             new_picking.name,
                             self.responsible.name)
-                msg_values = {'body': msg_body, 'model': picking._name, 'res_id': picking.id,
+                picking.message_post(body=msg_body)
+                """msg_values = {'body': msg_body, 'model': picking._name, 'res_id': picking.id,
                               'message_type': 'comment', 'author_id': self.env.user.id}
-                self.env['mail.message'].sudo().create(msg_values)
+                self.env['mail.message'].sudo().create(msg_values)"""
 
             picking.do_unreserve()
             picking.action_assign()
