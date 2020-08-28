@@ -14,9 +14,3 @@ class AddProductTemplateField(models.Model):
     _inherit = "product.template"
 
     descripcion_website = fields.Text('Descripción para Website', store=True)
-
-#     descripcion_website = fields.Text('Descripción para Website',compute="_des")
-
-#     def _des(self):
-#         for object in self:
-#             object.descripcion_website = object.description_sale
