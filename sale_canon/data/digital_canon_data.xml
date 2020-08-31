@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+
+        <record id="multifunctional_devices" model="sale.digital.canon">
+            <field name="name">Equipos Multifuncionales</field>
+            <field name="description">Equipos multifuncionales de inyección de tinta o láser y con capacidad de copia, impresión o escaneado</field>
+            <field name="amount">5.25</field>
+        </record>
+
+        <record id="monofunctional_devices" model="sale.digital.canon">
+            <field name="name">Equipos Monofuncionales</field>
+            <field name="description">Equipos monofuncionales con capacidad de copia, impresión o escaneado de hasta 39 copias por minuto</field>
+            <field name="amount">4.50</field>
+        </record>
+
+        <record id="disc_recorders" model="sale.digital.canon">
+            <field name="name">Grabadoras de Discos</field>
+            <field name="description">Grabadoras de discos</field>
+            <field name="amount">1.86</field>
+        </record>
+
+        <record id="mix_disc_content" model="sale.digital.canon">
+            <field name="name">Discos de Reproducción Mixta</field>
+            <field name="description">Discos de reproducción mixta, texto, sonora y visual o audiovisual</field>
+            <field name="amount">0.28</field>
+        </record>
+
+        <record id="usb_memory" model="sale.digital.canon">
+            <field name="name">Memorias USB</field>
+            <field name="description">Memorias USB y otras tarjetas de memoria no integradas en otros dispositivos</field>
+            <field name="amount">0.24</field>
+        </record>
+
+        <record id="external_disc" model="sale.digital.canon">
+            <field name="name">Discos Externos Mulmedia</field>
+            <field name="description">Discos externos mulmedia</field>
+            <field name="amount">6.45</field>
+        </record>
+
+        <record id="internal_disc" model="sale.digital.canon">
+            <field name="name">Discos Internos Mulmedia</field>
+            <field name="description">Discos internos mulmedia</field>
+            <field name="amount">5.45</field>
+        </record>
+
+        <record id="tablet_devices" model="sale.digital.canon">
+            <field name="name">Tablet</field>
+            <field name="description">Tablet</field>
+            <field name="amount">3.15</field>
+        </record>
+
+        <record id="smartphone_devices" model="sale.digital.canon">
+            <field name="name">Smartphone</field>
+            <field name="description">Smartphone devices</field>
+            <field name="amount">1.10</field>
+        </record>
+
+    </data>
+
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="sales_digital_canon_menu"
+            name="Digital Canon"
+            parent="sale.menu_sale_config"
+            action="sale_canon.action_digital_canon"
+            sequence="99"/>
+
+</odoo>

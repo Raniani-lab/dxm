@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_digital_canon" model="ir.actions.act_window">
+        <field name="name">Digital Canon</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.digital.canon</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html"> <!-- optional. This show on empty result -->
+            <p class="o_view_nocontent_smiling_face">
+                Create a new element
+            </p>
+            <p>
+                You must define new elements.
+            </p>
+        </field>
+    </record>
+
+    <record id="digital_canon_tree" model="ir.ui.view">
+        <field name="name">digital.canon.tree</field>
+        <field name="model">sale.digital.canon</field>
+        <field name="arch" type="xml">
+            <tree string="Digital Canon">
+                <field name="name"/>
+                <field name="amount"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="digital_canon_form" model="ir.ui.view">
+        <field name="name">digital.canon.form</field>
+        <field name="model">sale.digital.canon</field>
+        <field name="arch" type="xml">
+            <form string="Digital Canon">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" class="oe_inline"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="amount" widget="monetary" options="{'currency_field':'currency_id'}"/>
+                            <field name="product_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                        <!--<field name="category_ids">
+                            <tree create="0" edith="0">
+                                <field name="name"/>
+                            </tree>
+                        </field>-->
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

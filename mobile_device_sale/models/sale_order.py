@@ -204,6 +204,7 @@ class SaleOrder(models.Model):
 
             # create the line
             order_line = SaleOrderLineSudo.create(values)
+            order_line.order_id.onchange_order_line()  # Call here to calculate canon
 
             try:
                 order_line._compute_tax_id()
@@ -345,7 +346,6 @@ class SaleOrderLine(models.Model):
                 line.color_relation = colors[0]
             else:
                 line.color_relation = ""
-
 
     def match_product_specs(self, **kwargs):
         _logger.info("MATCH SPECS KW ARGS: %r", kwargs)

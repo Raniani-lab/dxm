@@ -737,6 +737,16 @@ odoo.define('oct_website_sale.sale', function (require) {
                                 // cart_table.remove();
                                 window.location.reload();
                             }
+                            console.log(data.canon_info);
+                            if (data.canon_info){
+                                for (var canon_id in data.canon_info){
+                                    var canon_line = $("#canon_row_" + canon_id);
+                                    console.log(canon_line)
+                                    var canon_qty_container = canon_line.find('.total_product_qty')
+                                    canon_qty_container.html(data.canon_info[canon_id])
+                                }
+                            }
+
                         } else {
                             // show an error message
                             action_icon.html(error_icon);

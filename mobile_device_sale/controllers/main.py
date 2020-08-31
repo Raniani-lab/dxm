@@ -724,6 +724,7 @@ class WebsiteSale(WebsiteSale):
                 'website_sale_order': order,
             })
         _logger.info("VALUE AT _CART_UPDATE_JSON: %r", value)
+        order.onchange_order_line()
         return value
 
     def _prepare_product_values(self, product, category, search, **kwargs):
@@ -814,6 +815,7 @@ class WebsiteSale(WebsiteSale):
         _logger.info("!!!!!DELETING SPECS ID: %r", specs_id)
         specs_obj = request.env['product.line.specs'].sudo().search([('id', '=', int(specs_id))])
         remain_order_lines = 0
+        canon_info = {}
         if specs_obj:
             line_obj = specs_obj.sale_order_line_id
             sale_obj = line_obj.order_id
@@ -823,11 +825,13 @@ class WebsiteSale(WebsiteSale):
                 line_obj.write({'product_uom_qty': new_line_qty})
             else:
                 line_obj.unlink()
-            remain_order_lines = len(sale_obj.order_line)
-
+            remain_order_lines = len(sale_obj.order_line.filtered(lambda l: not l.is_digital_canon))
+            sale_obj.onchange_order_line()
+            canon_info = sale_obj.get_canon_info()
         result = {
             'remain_lines': remain_order_lines,
-            'success': 'true'
+            'success': 'true',
+            'canon_info': canon_info
         }
         return result
 
