@@ -14,7 +14,7 @@ class ProductLineSpecs(models.Model):
     def _get_grade_colors_domain(self):
         line_id = self.env.context.get('active_id')
         line = self.env['sale.order.line'].browse(line_id)
-        sale_id = line.sale_id
+        sale_id = line.order_id
         product = line.product_id
         grade = line.product_grade
         colors = self.get_quant_colors(product, grade.id,sale_id)
