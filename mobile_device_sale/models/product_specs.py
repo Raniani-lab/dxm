@@ -14,9 +14,10 @@ class ProductLineSpecs(models.Model):
     def _get_grade_colors_domain(self):
         line_id = self.env.context.get('active_id')
         line = self.env['sale.order.line'].browse(line_id)
+        sale_id = line.sale_id
         product = line.product_id
         grade = line.product_grade
-        colors = self.get_quant_colors(product, grade.id)
+        colors = self.get_quant_colors(product, grade.id,sale_id)
         return [('id', 'in', colors.ids)]
 
     stock_move_line_id = fields.Many2one(comodel_name='stock.move')
@@ -39,11 +40,12 @@ class ProductLineSpecs(models.Model):
     def change_grade(self):
         _logger.info("GRADE ONCHANGE.....")
 
-    def get_quant_colors(self, product_id, grade):
+    def get_quant_colors(self, product_id, grade,sale_id):
         _logger.info("FINDING PRODUCT COLORS.....")
         get_param = self.env['ir.config_parameter'].sudo().get_param
-        default_location_id = get_param('mobile_device_sale.mobile_stock_location')
-        stock_location = self.env['stock.location'].browse(int(default_location_id))
+        #default_location_id = get_param('mobile_device_sale.mobile_stock_location')
+        #stock_location = self.env['stock.location'].browse(int(default_location_id))
+        stock_location = sale_id.warehouse_id.lot_stock_id
         all_product_quants = self.env['stock.quant'].sudo()._gather(product_id, stock_location)
         lot_filter = 'q.lot_id.x_studio_revision_grado.id == %s' % grade
         quants_filtered = all_product_quants.filtered(lambda q: eval(lot_filter))

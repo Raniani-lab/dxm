@@ -239,21 +239,20 @@
 
     <!-- Document to print from test view -->
     <template id="lot_label_document">
+        <t t-name="mobile_device_reception.lot_label_document">
         <t t-call="mobile_device_reception.label_layout">
 <!--        <t t-call="web.basic_layout">-->
-            <t t-set="doc" t-value="doc.with_context(lang=doc.env.context.get('lang'))" />
+            <t t-set="doc" t-value="doc.with_context(lang=doc.env.context.get('lang'))"/>
             <t t-foreach="doc" t-as="lot">
 
 
 
-                <div style="width: 100%; height: 120px; display: inline-block; font-size: 18px; clear: both;">
+                <div style="width: 100%; height: 120px; display: inline-block; font-size: 18px; clear: both;margin-left:8px">
 
-                    <strong t-field="lot.product_id.name"
-                            style="text-align: left; width: 600px; margin: 5px; display: inline-block;
-                            border-bottom: 1px solid black; padding: 2px; margin-left: -5px; font-size: 14px;"/>
+                    <strong t-field="lot.product_id.name" style="text-align: left; width: 600px; margin-top: 20px; display:block;                             border-bottom: 1px solid black; padding: 2px; margin-left: -5px; font-size: 14px;"/>
 
                     <br/>
-                    <div style="width: 50%; float: left;">
+                    <div style="width: 100%; float: left;margin-top:-20px">
                         <!--<strong>
                             S/N:
                         </strong>
@@ -268,14 +267,18 @@
                             Grade:
                         </strong>
                         <span t-field="lot.x_studio_revision_grado.x_name"/>
-                        <br/>
+                         <strong>
+                            | Color:
+                        </strong>
+                        <span t-field="lot.x_studio_color.x_name"/>
+                        <!--<br/>
                         <strong>Test Date:</strong>
                         <span t-field="lot.esthetic_test_id.create_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                        <br/>
+                        <br/>-->
                     </div>
 
 
-                    <div style="width: 40%; margin-left: 5px; float: left;">
+                   <!-- <div style="width: 40%; margin-left: 5px; float: left;">
 
                         <t t-if="lot.x_studio_resultado == 'Con Avería'">
                             <strong>Fail Items:</strong>
@@ -397,20 +400,20 @@
 
                         </t>
 
-                    </div>
+                    </div>-->
 
 
                 </div>
 
 
 
-                <div style="display: block; width: 95%;float:left; text-align: center;">
+                <div style="display: block; width: 95%;float:left; text-align: center; margin-top: -30px;">
 
-                    <div style="display: block; width: 100%; text-align: center; margin-top: 5px;">
-                        <img t-att-src="web_base_url + '/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %                         ('Code128', lot.name, 400, 50)" style="width:400px; height: 50px"/>
+                    <div style="display: block; width: 100%; text-align: center; margin-top: 0px; margin-left:-20px">
+                        <img t-att-src="web_base_url + '/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %                         ('Code128', lot.name, 500, 60)" style="margin-left:-20px;width:500px; height:60px"/>
                         <br/>
-                        <div style="width: 100%; display: block; text-align: center; margin-top: 5px;">
-                            <span t-field="lot.name"/>
+                        <div style="width: 100%; display: block; text-align: center; margin-top: 0px; margin-left:10px">
+                            <span style="font-size: 25px;" t-field="lot.name"/>
                         </div>
                     </div>
 
@@ -427,6 +430,7 @@
 
             </t>
         </t>
+    </t>
     </template>
 
     <!-- Base document to print from test view -->
