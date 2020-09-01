@@ -6,35 +6,69 @@
     <data>
         <template id="oct_inherit_report_invoice" inherit_id="sale_stock.sale_stock_report_invoice_document">
             <xpath expr="//table[@name='invoice_snln_table']" position="replace">
-                <table groups="sale_stock.group_lot_on_invoice" class="table table-sm" style="width: 100%;" name="invoice_snln_table">
+                <table groups="sale_stock.group_lot_on_invoice" class="table table-sm" style="width: 100%;"
+                       name="invoice_snln_table">
                     <thead>
                         <tr>
                             <th><span>Product</span></th>
-                            <th class="text-right"><span>Quantity</span></th>
-                            <th class="text-right"><span>SN/LN</span></th>
+                            <th class="text-center"><span>Quantity</span></th>
+                            <th class="text-center"><span>SN/LN</span></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="comparacion" t-value=""/>
+                        <t t-set="contador" t-value="0"/>
+                        <t t-set="cantidad" t-value="0"/>
+                        <t t-set="nombre" t-value=""/>
+                        <t t-set="imei" t-value=""/>
+
                         <t t-foreach="lot_values" t-as="snln_line">
-                            <tr>
-                                <t t-if="snln_line['product_name'] == comparacion">
-                                    <td><span></span></td>
+
+                            <t t-if="contador == 0">
+                                <t t-set="nombre" t-value="snln_line['product_name']"/>
+                                <t t-set="imei" t-value="snln_line['lot_name']"/>
+                                <t t-set="contador" t-value="contador + 1"/>
+                                <t t-set="cantidad" t-value="cantidad + 1"/>
+                            </t>
+
+                            <t t-else="">
+                                <t t-if="snln_line['product_name'] == nombre">
+                                    <t t-set="imei" t-value="imei + ', ' + snln_line['lot_name']"/>
+                                    <t t-set="cantidad" t-value="cantidad + 1"/>
                                 </t>
                                 <t t-else="">
-                                    <td style="width: 50%"><t t-esc="snln_line['product_name']"/></td>
-                                    <t t-set="comparacion" t-value="snln_line['product_name']"/>
+                                    <tr>
+                                        <td style="width: 30%">
+                                            <t t-esc="nombre"/>
+                                            <t t-set="nombre" t-value=""/>
+                                            <t t-set="nombre" t-value="snln_line['product_name']"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="cantidad"/>
+                                            <t t-set="cantidad" t-value="1"/>
+                                            <t t-esc="snln_line['uom_name']" groups="uom.group_uom"/>
+                                        </td>
+                                        <td style="width: 60%">
+                                            <t t-esc="imei"/>
+                                            <t t-set="imei" t-value=""/>
+                                            <t t-set="imei" t-value="snln_line['lot_name']"/>
+                                        </td>
+                                    </tr>
                                 </t>
-                                <td class="text-right">
-                                    <t t-esc="snln_line['quantity']"/>
-                                    <t t-esc="snln_line['uom_name']" groups="uom.group_uom"/>
-                                </td>
-                                <td class="text-right"><t t-esc="snln_line['lot_name']"/></td>
-                            </tr>
+                            </t>
                         </t>
+                        <tr>
+                            <td style="width: 30%">
+                                <t t-esc="nombre"/>
+                            </td>
+                            <td class="text-center">
+                                <t t-esc="cantidad"/>
+                            </td>
+                            <td style="width: 60%">
+                                <t t-esc="imei"/>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-
             </xpath>
         </template>
     </data>
