@@ -438,6 +438,8 @@ class WebsiteSale(WebsiteSale):
             kwargs.pop('device_capacity')
         if 'brand' in kwargs.keys():
             kwargs.pop('brand')
+        if 'search' in kwargs.keys():
+            kwargs.pop('search')
         normalized_specs_filter = {x.split('_')[1] if len(x.split('_')) == 2 else '_'.join([x.split('_')[1], x.split('_')[2]]): int(kwargs[x]) for x in kwargs}
         _logger.info("NORMALIZED SPECS FILTER: %r", normalized_specs_filter)
         return normalized_specs_filter

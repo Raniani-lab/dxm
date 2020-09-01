@@ -61,7 +61,7 @@ class SaleOrder(models.Model):
                     canon_line = self.env['sale.order.line'].create(vals)
                     if canon_line:
                         for line in canon_order_lines:
-                            line.write({'digital_canon_line_id': canon.id})
+                            line.write({'digital_canon_line_id': canon_line.id})
         else:
             if self.order_line:
                 for line in self.order_line:
