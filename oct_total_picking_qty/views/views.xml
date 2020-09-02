@@ -11,5 +11,20 @@
                 </field>
             </field>
         </record>
+
+        <record id="stock_picking_form_view_extend" model="ir.ui.view">
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <field name="move_ids_without_package" position="after">
+                <group class="oe_right">
+                    <group>
+                        <field name="computed_total_demand"/>
+                        <field name="computed_total_qty_done"/>
+                    </group>
+                </group>
+            </field>
+        </field>
+    </record>
     </data>
 </odoo>

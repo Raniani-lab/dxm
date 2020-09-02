@@ -6,8 +6,8 @@ from odoo import models, fields, api
 class PickingCost(models.Model):
     _inherit = "stock.picking"
 
-    computed_total_demand = fields.Float(string='Total demandado', compute='_calculate_move_qty')
-    computed_total_qty_done = fields.Float(string='Total hecho', compute='_calculate_move_qty')
+    computed_total_demand = fields.Integer(string='Total demandado', compute='_calculate_move_qty')
+    computed_total_qty_done = fields.Integer(string='Total hecho', compute='_calculate_move_qty')
 
 
     def _calculate_move_qty(self):
