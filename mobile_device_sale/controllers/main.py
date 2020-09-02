@@ -178,7 +178,7 @@ class WebsiteSale(WebsiteSale):
         _logger.info("CURRENT WEBSITE: %r", current_website)
         if request.env.user.id == 4 and int(website_for_sell) == current_website:
             _logger.info("REDIRECT TO LOGIN PAGE")
-            return request.redirect('/web/login')
+            return request.redirect('/web/login?redirect=/shop')
         if int(website_for_sell) == current_website:
             mobile_sale = True
             default_specs = {
@@ -925,7 +925,7 @@ class WebsiteSale(WebsiteSale):
 
         return request.render("website_sale.cart", values)
 
-    @http.route(['/shop/payment'], type='http', auth="user", website=True, sitemap=False)
+    @http.route(['/shop/payment'], type='http', auth="public", website=True, sitemap=False)
     def payment(self, **post):
         """ Payment step. This page proposes several payment means based on available
         payment.acquirer. State at this point :
@@ -961,7 +961,7 @@ class WebsiteSale(WebsiteSale):
         _logger.info("RENDER VALUES: %r", render_values)
         return request.render("website_sale.payment", render_values)
 
-    @http.route('/shop/payment/validate', type='http', auth="user", website=True, sitemap=False)
+    @http.route('/shop/payment/validate', type='http', auth="public", website=True, sitemap=False)
     def payment_validate(self, transaction_id=None, sale_order_id=None, **post):
         """ Method that should be called by the server when receiving an update
         for a transaction. State at this point :

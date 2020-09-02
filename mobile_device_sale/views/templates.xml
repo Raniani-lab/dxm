@@ -198,8 +198,8 @@
                         </t>
                         <t t-if="product.inventory_availability == 'never'">
 
-                            <t t-if="product.qty_available &gt; 0">
-                                <t t-esc="int(product.qty_available)"/>
+                            <t t-if="product.sudo().qty_available &gt; 0">
+                                <t t-esc="int(product.sudo().qty_available)"/>
                             </t>
                             <t t-if="product.qty_available &lt;= 0">
                                 On Demand
@@ -442,17 +442,17 @@
                         </t>
                         <t t-if="product.inventory_availability == 'never'">
 
-                            <t t-if="product.qty_available &gt; 0">
-                                <t t-esc="int(product.qty_available)"/>
+                            <t t-if="product.sudo().qty_available &gt; 0">
+                                <t t-esc="int(product.sudo().qty_available)"/>
                             </t>
-                            <t t-if="product.qty_available &lt;= 0">
+                            <t t-if="product.sudo().qty_available &lt;= 0">
                                 On Demand
                             </t>
 
                         </t>
                         <t t-if="product.inventory_availability == 'always'">
 
-                            <t t-esc="int(product.qty_available)"/>
+                            <t t-esc="int(product.sudo().qty_available)"/>
 
                         </t>
 

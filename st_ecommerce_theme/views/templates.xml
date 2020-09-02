@@ -16,6 +16,7 @@
         <template id="ecommerce_frontend_layout" inherit_id="portal.frontend_layout" priority="15">
             <xpath expr="//header" position="replace">
                 <header>
+                    <t t-set="mobile_sale_site" t-value="int(request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.website_for_sell'))"/>
                     <nav class="custom_header">
                         <div class="container">
                             <div class="header-top-t">
@@ -27,7 +28,7 @@
                                               t-att-title="res_company.name"/>
                                     </a>
                                 </div>
-                                <t t-if="not user_id._is_public()">
+                                <t t-if="not user_id._is_public() or website.id != mobile_sale_site">
                                     <t t-call="st_ecommerce_theme.ecommerce_header_search"/>
                                 </t>
                                 <div class="header-right">
@@ -70,7 +71,7 @@
 
                                         </li>
 
-                                        <t t-if="not user_id._is_public()">
+                                        <t t-if="not user_id._is_public() or website.id != mobile_sale_site">
 
                                             <t t-set="website_sale_order"
                                                t-value="website.sale_get_order()"/>
@@ -87,7 +88,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            <t t-if="not user_id._is_public()">
+                            <t t-if="not user_id._is_public() or website.id != mobile_sale_site">
                                 <nav class="navbar navbar-expand-md">
                                     <button type="button" class="navbar-toggler" data-toggle="collapse"
                                             data-target="#top_menu_collapse">
