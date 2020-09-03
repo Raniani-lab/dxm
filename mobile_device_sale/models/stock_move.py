@@ -97,6 +97,5 @@ class StockMoveLine(models.Model):
             'views': [(view.id, 'form')],
             'view_id': view.id,
             'target': 'new',
-            'res_id': self.id,
-            # 'context': {'default_sale_order_line_id': self.id}
+            'res_id': self.id
         }

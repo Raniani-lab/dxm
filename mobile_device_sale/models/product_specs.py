@@ -12,13 +12,18 @@ class ProductLineSpecs(models.Model):
     _description = 'Product line specifications'
 
     def _get_grade_colors_domain(self):
-        line_id = self.env.context.get('active_id')
-        line = self.env['sale.order.line'].browse(line_id)
-        sale_id = line.order_id
-        product = line.product_id
-        grade = line.product_grade
-        colors = self.get_quant_colors(product, grade.id,sale_id)
-        return [('id', 'in', colors.ids)]
+        color_ids = []
+        if self.env.context:
+            if 'params' in self.env.context.keys():
+                if self.env.context.get('params').get('model') in ['sale.order.line', 'sale.order']:
+                    line_id = self.env.context.get('active_id')
+                    line = self.env['sale.order.line'].browse(line_id)
+                    if line:
+                        product = line.product_id
+                        grade = line.product_grade
+                        colors = self.get_quant_colors(product, grade.id, line.order_id)
+                        color_ids = colors.ids
+        return [('id', 'in', color_ids)]
 
     stock_move_line_id = fields.Many2one(comodel_name='stock.move')
     order_id = fields.Many2one(comodel_name='sale.order')
@@ -40,11 +45,11 @@ class ProductLineSpecs(models.Model):
     def change_grade(self):
         _logger.info("GRADE ONCHANGE.....")
 
-    def get_quant_colors(self, product_id, grade,sale_id):
+    def get_quant_colors(self, product_id, grade, sale_id):
         _logger.info("FINDING PRODUCT COLORS.....")
-        get_param = self.env['ir.config_parameter'].sudo().get_param
-        #default_location_id = get_param('mobile_device_sale.mobile_stock_location')
-        #stock_location = self.env['stock.location'].browse(int(default_location_id))
+        # get_param = self.env['ir.config_parameter'].sudo().get_param
+        # default_location_id = get_param('mobile_device_sale.mobile_stock_location')
+        # stock_location = self.env['stock.location'].browse(int(default_location_id))
         stock_location = sale_id.warehouse_id.lot_stock_id
         all_product_quants = self.env['stock.quant'].sudo()._gather(product_id, stock_location)
         lot_filter = 'q.lot_id.x_studio_revision_grado.id == %s' % grade

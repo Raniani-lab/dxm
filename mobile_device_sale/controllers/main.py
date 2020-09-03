@@ -168,13 +168,17 @@ class WebsiteSale(WebsiteSale):
         '''/shop/page/<int:page>''',
         '''/shop/category/<model("product.public.category"):category>''',
         '''/shop/category/<model("product.public.category"):category>/page/<int:page>'''
-    ], type='http', auth="user", website=True, sitemap=sitemap_shop)
+    ], type='http', auth="public", website=True, sitemap=sitemap_shop)
     def shop(self, page=0, category=None, search='', ppg=False, **post):
         _logger.info("ON SHOP INHERITED CONTROLLER")
         _logger.info("POST ARGS: %r", post)
         active_filter = False
         website_for_sell = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.website_for_sell')
         current_website = request.env['website'].get_current_website().id
+        _logger.info("CURRENT WEBSITE: %r", current_website)
+        if request.env.user.id == 4 and int(website_for_sell) == current_website:
+            _logger.info("REDIRECT TO LOGIN PAGE")
+            return request.redirect('/web/login?redirect=/shop')
         if int(website_for_sell) == current_website:
             mobile_sale = True
             default_specs = {
@@ -195,7 +199,7 @@ class WebsiteSale(WebsiteSale):
                 if 'fw' in post.keys() and len(post) == 1:
                     specs_post.update(default_specs)
                 for key in post:
-                    if post[key] != '0' and key not in ['fw', 'search']:
+                    if post[key] != '0' and key not in ['fw']:
                         active_filter = True
                         if key in [
                             # 'device_network_type',
@@ -376,7 +380,7 @@ class WebsiteSale(WebsiteSale):
         else:
             return super(WebsiteSale, self).shop(page=page, category=category, search=search, ppg=ppg, **post)
 
-    @http.route(['''/shop/get_product_info'''], type='json', auth="user", website=True)
+    @http.route(['''/shop/get_product_info'''], type='json', auth="public", website=True)
     def get_product_info(self, product_id=None, grade=0, color=0, lock_status=0, logo=0, charger=0,
                          network_type=0, lang=0, applications=0):
         _logger.info("GET INFO PRODUCT ID: %r", product_id)
@@ -438,11 +442,13 @@ class WebsiteSale(WebsiteSale):
             kwargs.pop('device_capacity')
         if 'brand' in kwargs.keys():
             kwargs.pop('brand')
+        if 'search' in kwargs.keys():
+            kwargs.pop('search')
         normalized_specs_filter = {x.split('_')[1] if len(x.split('_')) == 2 else '_'.join([x.split('_')[1], x.split('_')[2]]): int(kwargs[x]) for x in kwargs}
         _logger.info("NORMALIZED SPECS FILTER: %r", normalized_specs_filter)
         return normalized_specs_filter
 
-    @http.route(['''/shop/get_product_info/detail'''], type='json', auth="user", website=True)
+    @http.route(['''/shop/get_product_info/detail'''], type='json', auth="public", website=True)
     def get_product_info_detail(self, product_id, grade=None, specs=None):
         _logger.info("GET DETAIL PRODUCT ID: %r", product_id)
         if specs:
@@ -496,7 +502,7 @@ class WebsiteSale(WebsiteSale):
                 cart_qty = grade_quant
             return {'product_id': product_id, 'grade_quant': grade_quant, 'cart_qty': cart_qty, 'color': result}
 
-    @http.route(['''/shop/get_product_info/grid'''], type='json', auth="user", website=True)
+    @http.route(['''/shop/get_product_info/grid'''], type='json', auth="public", website=True)
     def get_product_info_grid(self, product_id=None, grade=None, specs=None):
         _logger.info("GET INFO PRODUCT ID: %r", product_id)
         _logger.info("SPECS FILTER VALUES: %r", specs)
@@ -682,7 +688,7 @@ class WebsiteSale(WebsiteSale):
 
         return len(quants_filtered)
 
-    @http.route(['/shop/cart/update_json'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
+    @http.route(['/shop/cart/update_json'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def cart_update_json(self, product_id, line_id=None, add_qty=None, set_qty=None, display=True, **kwargs):
         """This route is called when changing quantity from the cart or adding
         a product from the wishlist."""
@@ -724,6 +730,7 @@ class WebsiteSale(WebsiteSale):
                 'website_sale_order': order,
             })
         _logger.info("VALUE AT _CART_UPDATE_JSON: %r", value)
+        order.onchange_order_line()
         return value
 
     def _prepare_product_values(self, product, category, search, **kwargs):
@@ -808,12 +815,13 @@ class WebsiteSale(WebsiteSale):
             'mobile_sale': mobile_sale
         }
 
-    @http.route(['/shop/cart/delete_specs'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
+    @http.route(['/shop/cart/delete_specs'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def cart_update_specs(self, specs_id, **kwargs):
         """This route is called when delete sale order line specifications."""
         _logger.info("!!!!!DELETING SPECS ID: %r", specs_id)
         specs_obj = request.env['product.line.specs'].sudo().search([('id', '=', int(specs_id))])
         remain_order_lines = 0
+        canon_info = {}
         if specs_obj:
             line_obj = specs_obj.sale_order_line_id
             sale_obj = line_obj.order_id
@@ -823,15 +831,17 @@ class WebsiteSale(WebsiteSale):
                 line_obj.write({'product_uom_qty': new_line_qty})
             else:
                 line_obj.unlink()
-            remain_order_lines = len(sale_obj.order_line)
-
+            remain_order_lines = len(sale_obj.order_line.filtered(lambda l: not l.is_digital_canon))
+            sale_obj.onchange_order_line()
+            canon_info = sale_obj.get_canon_info()
         result = {
             'remain_lines': remain_order_lines,
-            'success': 'true'
+            'success': 'true',
+            'canon_info': canon_info
         }
         return result
 
-    @http.route(['''/shop/cart/update_price_offered'''], type='json', auth="user", website=True)
+    @http.route(['''/shop/cart/update_price_offered'''], type='json', auth="public", website=True)
     def set_order_line_price_offered(self, line_id=None, offer=None):
         _logger.info("SET PRICE OFFERED FOR LINE ID: %r", line_id)
         result = 'done'
@@ -860,12 +870,12 @@ class WebsiteSale(WebsiteSale):
             result = 'error'
         return {'response': result}
 
-    @http.route(['''/shop/get_mobile_device_sell_website'''], type='json', auth="user", website=True)
+    @http.route(['''/shop/get_mobile_device_sell_website'''], type='json', auth="public", website=True)
     def get_sell_website_id(self):
         website_for_sell = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.website_for_sell')
         return {'website_mobile_sell': int(website_for_sell)}
 
-    @http.route(['/shop/cart'], type='http', auth="user", website=True, sitemap=False)
+    @http.route(['/shop/cart'], type='http', auth="public", website=True, sitemap=False)
     def cart(self, access_token=None, revive='', **post):
         website_for_sell = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.website_for_sell')
         current_website = request.env['website'].get_current_website().id
@@ -915,7 +925,7 @@ class WebsiteSale(WebsiteSale):
 
         return request.render("website_sale.cart", values)
 
-    @http.route(['/shop/payment'], type='http', auth="user", website=True, sitemap=False)
+    @http.route(['/shop/payment'], type='http', auth="public", website=True, sitemap=False)
     def payment(self, **post):
         """ Payment step. This page proposes several payment means based on available
         payment.acquirer. State at this point :
@@ -951,7 +961,7 @@ class WebsiteSale(WebsiteSale):
         _logger.info("RENDER VALUES: %r", render_values)
         return request.render("website_sale.payment", render_values)
 
-    @http.route('/shop/payment/validate', type='http', auth="user", website=True, sitemap=False)
+    @http.route('/shop/payment/validate', type='http', auth="public", website=True, sitemap=False)
     def payment_validate(self, transaction_id=None, sale_order_id=None, **post):
         """ Method that should be called by the server when receiving an update
         for a transaction. State at this point :
@@ -993,7 +1003,7 @@ class WebsiteSale(WebsiteSale):
 
         return request.redirect('/shop/confirmation')
 
-    @http.route(['''/shop/get_product_variant_quant_info'''], type='json', auth="user", website=True)
+    @http.route(['''/shop/get_product_variant_quant_info'''], type='json', auth="public", website=True)
     def get_product_variant_quant_info(self, product_template_id=None):
         get_param = request.env['ir.config_parameter'].sudo().get_param
         location_id = int(get_param('mobile_device_sale.standard_stock_location'))

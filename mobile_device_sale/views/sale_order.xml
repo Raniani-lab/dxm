@@ -31,13 +31,6 @@
                             <field name="logo" string="Welcome Logo"/>
                             <field name="charger" string="SPECS"/>
                             <field name="applications"/>
-
-                            <!--<groupby name="product_id">
-                              <field name="name"/>
-                                <button type="edit" name="edit" string="Edit"/>
-                                <button type="object" name="my_method" string="Button1"/>
-                            </groupby>-->
-
                         </tree>
 
                     </field>

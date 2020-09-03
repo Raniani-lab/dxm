@@ -19,8 +19,6 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                 self._getPermittedLotBarcodes(this.actionParams.pickingId),
                 self._getMedia()
             ]).then(function () {
-                // var btn_cnt = self.$('#scan_count');
-                // btn_cnt.text(self.initialScanned)
                 return self._loadNomenclature();
             });
         },
