@@ -45,8 +45,10 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
             }
             console.log("max_qty:")
             console.log(max_qty)
+            if (type_transfer != 'internal'){
+                this.ProductsQuantity[product.id]['scanned_qty'] += 1
+            }
 
-            this.ProductsQuantity[product.id]['scanned_qty'] += 1
             if (this.scannedCount < max_qty || type_transfer == 'internal'){
                 console.log('scannedCount')
                 console.log(this.scannedCount)
