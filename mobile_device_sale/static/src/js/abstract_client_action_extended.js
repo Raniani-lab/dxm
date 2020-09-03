@@ -28,22 +28,37 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
         /**
          * Actualize scanned number
          * **/
-        _change_scanned_products: function(product){
+        _change_scanned_products: function(product,type_transfer){
             console.log("CHECKING PRODUCT QUANTITY SCANNED")
-            var max_qty = this.ProductsQuantity[product.id]['quantity'];
+            var max_qty = 0;
+            if (this.initialState.move_line_ids.length > 0){
+                this.initialState.move_line_ids.map(function(current,index,arr){
+                    if (current.product_uom_qty){
+                         max_qty = max_qty + current.product_uom_qty
+                    }
+
+                });
+
+            }
+            if (this.scannedCount == 0){
+                this.scannedCount = this.initialScanned;
+            }
             console.log("max_qty:")
             console.log(max_qty)
-            console.log('scannedCount')
-            console.log(this.scannedCount)
-            if (this.scannedCount < max_qty){
+
+            this.ProductsQuantity[product.id]['scanned_qty'] += 1
+            if (this.scannedCount < max_qty || type_transfer == 'internal'){
+                console.log('scannedCount')
+                console.log(this.scannedCount)
                 this.scannedCount += 1;
                 var btn_cnt = this.$('#scan_count');
-                btn_cnt.text(this.scannedCount)
-                this.ProductsQuantity[product.id]['scanned_qty'] += 1
+                btn_cnt.text(this.scannedCount);
+
                 return true
-            } else {
-                return false
             }
+
+            return false
+
 
         },
 
@@ -376,7 +391,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                         line.qty_done += params.product.qty || 1;
                         // Update scanned count
                         // console.log(this.scannedCount)
-                        if (this._change_scanned_products(params.product) || this.currentState.picking_type_code =='internal'){
+                        if (this._change_scanned_products(params.product,this.currentState.picking_type_code) || this.currentState.picking_type_code =='internal'){
                             console.log("ALL OK")
                         } else {
                             console.log("MAX NUMBER OF BARCODE REACHED")
@@ -415,7 +430,7 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
                         console.log("PERMITTED LOT")
                         // Update scanned count
                         // console.log(this.scannedCount)
-                        if (this._change_scanned_products(params.product) || this.currentState.picking_type_code =='internal'){
+                        if (this._change_scanned_products(params.product,this.currentState.picking_type_code) || this.currentState.picking_type_code =='internal'){
                             console.log("ALL OK")
                         } else {
                             console.log("MAX NUMBER OF BARCODE REACHED")
@@ -470,6 +485,29 @@ odoo.define('mobile_device_sale.ClientActionExtended', function (require) {
 
     })
 
-    return ClientActionExtended
+    //return ClientActionExtended
+
+    var LinesWidgetExtended = LinesWidget.include({
+        init: function (parent, page, pageIndex, nbPages) {
+        this._super.apply(this, arguments);
+
+
+        var sum = 0
+            var max = 0
+        if (this.page.lines.length>0){
+            this.page.lines.map(function(current){
+                if (current.qty_done){
+                    sum = sum+current.qty_done;
+                }
+                if (current.product_uom_qty){
+                    max = max+current.product_uom_qty;
+                }
+
+            });
+        }
+        this.scanMax = max
+        this.scannedCount = sum
+    },
+    });
 
 });

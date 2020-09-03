@@ -3,7 +3,7 @@
     <t t-inherit="stock_barcode.stock_barcode_lines_widget" t-inherit-mode="extension">
         <xpath expr="//button[hasclass('o_put_in_pack')]" position="after">
             <button class="btn btn-secondary btn-scan-count" disabled="1">
-                SCAN COUNT: <span id="scan_count">0</span>
+                SCAN COUNT: <span id="scan_count" t-esc="widget.scannedCount"/>/<span id="scan_count" t-esc="widget.scanMax"/>
             </button>
         </xpath>
     </t>
