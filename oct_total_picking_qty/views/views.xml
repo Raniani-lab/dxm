@@ -1,0 +1,53 @@
+<odoo>
+    <data>
+
+        <record id="stock_picking_list_view_extend" model="ir.ui.view">
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="computed_total_demand"/>
+                    <field name="computed_total_qty_done"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="stock_picking_form_view_extend" model="ir.ui.view">
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="move_ids_without_package" position="after">
+                    <group class="oe_right">
+                        <group>
+                            <field name="computed_total_demand"/>
+                            <field name="computed_total_qty_done"/>
+                        </group>
+                    </group>
+                </field>
+            </field>
+        </record>
+
+        <template id="oct_inherit_report_picking" inherit_id="stock.report_picking">
+            <xpath expr="//div[@class='page']//table[1]" position="after">
+                <table class="table table-sm" t-if="o.move_ids_without_package">
+                    <thead>
+                        <tr>
+                            <th style="text-align: right;">Total Demandado</th>
+                            <th style="text-align: right;">Total Hecho</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: right;">
+                                <span t-field="o.computed_total_demand"/>
+                            </td>
+                            <td style="text-align: right;">
+                                <span t-field="o.computed_total_qty_done"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </xpath>
+        </template>
+    </data>
+</odoo>

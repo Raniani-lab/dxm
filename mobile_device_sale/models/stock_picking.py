@@ -32,6 +32,6 @@ class StockPicking(models.Model):
                 quant_filtered = product_quants.filtered(lambda q: eval(specs_filter))
                 lots_in_quants = quant_filtered.mapped('lot_id').ids
                 lots += lots_in_quants
-        total_scanned = sum(picking.move_lines.mapped('quantity_done'))
+        total_scanned = sum(picking.move_line_ids.mapped('qty_done'))
 
         return {'lots': lots, 'products_quants': products_quantity, 'total_scanned': total_scanned}
