@@ -29,18 +29,18 @@
                     <span class="oct_product_qty">
 
                         <t t-if="product.inventory_availability == 'threshold'">
-                            <t t-if="product.stock_qty &gt; product.available_threshold">
+                            <t t-if="product.sudo().stock_qty &gt; product.available_threshold">
                                 Stock Available
                             </t>
-                            <t t-if="product.stock_qty &lt;= product.available_threshold">
-                                <t t-esc="int(product.stock_qty)"/>
+                            <t t-if="product.sudo().stock_qty &lt;= product.available_threshold">
+                                <t t-esc="int(product.sudo().stock_qty)"/>
                             </t>
                         </t>
                         <t t-if="product.inventory_availability == 'never'">
-                            <t t-esc="int(product.stock_qty)"/>
+                            <t t-esc="int(product.sudo().stock_qty)"/>
                         </t>
                         <t t-if="product.inventory_availability == 'always'">
-                            <t t-esc="int(product.stock_qty)"/>
+                            <t t-esc="int(product.sudo().stock_qty)"/>
                         </t>
 
                     </span>
@@ -189,11 +189,11 @@
                     <span class="oct_product_qty">
 
                         <t t-if="product.inventory_availability == 'threshold'">
-                            <t t-if="product.qty_available &gt; product.available_threshold">
+                            <t t-if="product.sudo().qty_available &gt; product.available_threshold">
                                 Available
                             </t>
-                            <t t-if="product.qty_available &lt;= product.available_threshold">
-                                <t t-esc="int(product.qty_available)"/>
+                            <t t-if="product.sudo().qty_available &lt;= product.available_threshold">
+                                <t t-esc="int(product.sudo().qty_available)"/>
                             </t>
                         </t>
                         <t t-if="product.inventory_availability == 'never'">
@@ -201,14 +201,14 @@
                             <t t-if="product.sudo().qty_available &gt; 0">
                                 <t t-esc="int(product.sudo().qty_available)"/>
                             </t>
-                            <t t-if="product.qty_available &lt;= 0">
+                            <t t-if="product.sudo().qty_available &lt;= 0">
                                 On Demand
                             </t>
 
                         </t>
                         <t t-if="product.inventory_availability == 'always'">
 
-                            <t t-esc="int(product.qty_available)"/>
+                            <t t-esc="int(product.sudo().qty_available)"/>
 
                         </t>
 
@@ -404,43 +404,41 @@
             </t>
             <t t-else="">
 
-
-
                 <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
-          <h4 class="oe_price_h4 css_editable_mode_hidden">
-              <span t-attf-class="text-danger oe_default_price {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="text-decoration: line-through; white-space: nowrap;"
-                  t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"
-              />
-              <b class="oe_price" style="white-space: nowrap;" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-              <span itemprop="price" style="display:none;" t-esc="combination_info['price']"/>
-              <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
-          </h4>
-          <h4 class="css_non_editable_mode_hidden decimal_precision" t-att-data-precision="str(website.currency_id.decimal_places)">
-            <span t-field="product.list_price"
-                t-options='{
-                   "widget": "monetary",
-                   "display_currency": product.currency_id,
-               }'/>
-          </h4>
-      </div>
+                      <h4 class="oe_price_h4 css_editable_mode_hidden">
+                          <span t-attf-class="text-danger oe_default_price {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="text-decoration: line-through; white-space: nowrap;"
+                              t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"
+                          />
+                          <b class="oe_price" style="white-space: nowrap;" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                          <span itemprop="price" style="display:none;" t-esc="combination_info['price']"/>
+                          <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                      </h4>
+                      <h4 class="css_non_editable_mode_hidden decimal_precision" t-att-data-precision="str(website.currency_id.decimal_places)">
+                        <span t-field="product.list_price"
+                            t-options='{
+                               "widget": "monetary",
+                               "display_currency": product.currency_id,
+                           }'/>
+                      </h4>
+                  </div>
 
 
                 <div class="oct_stock_qty"
-                     t-attf-data-inventory-policy="#{product.inventory_availability}"
-                     t-attf-data-inventory-threshold="#{product.available_threshold}">
+                     t-attf-data-inventory-policy="#{product.sudo().inventory_availability}"
+                     t-attf-data-inventory-threshold="#{product.sudo().available_threshold}">
                     <i class="fa fa-cubes"/>
                     Stock:
                     <span class="oct_product_qty">
 
-                        <t t-if="product.inventory_availability == 'threshold'">
-                            <t t-if="product.qty_available &gt; product.available_threshold">
+                        <t t-if="product.sudo().inventory_availability == 'threshold'">
+                            <t t-if="product.sudo().qty_available &gt; product.sudo().available_threshold">
                                 Available
                             </t>
-                            <t t-if="product.qty_available &lt;= product.available_threshold">
-                                <t t-esc="int(product.qty_available)"/>
+                            <t t-if="product.sudo().qty_available &lt;= product.sudo().available_threshold">
+                                <t t-esc="int(product.sudo().qty_available)"/>
                             </t>
                         </t>
-                        <t t-if="product.inventory_availability == 'never'">
+                        <t t-if="product.sudo().inventory_availability == 'never'">
 
                             <t t-if="product.sudo().qty_available &gt; 0">
                                 <t t-esc="int(product.sudo().qty_available)"/>
@@ -450,7 +448,7 @@
                             </t>
 
                         </t>
-                        <t t-if="product.inventory_availability == 'always'">
+                        <t t-if="product.sudo().inventory_availability == 'always'">
 
                             <t t-esc="int(product.sudo().qty_available)"/>
 
@@ -1170,7 +1168,7 @@
                                     </div>
                                     <input type="text" class="form-control quantity" data-min="1" name="add_qty"
                                            t-att-value="add_qty or 1"
-                                           t-attf-max="#{(product.qty_available - product.product_variant_id.cart_qty) if product.inventory_availability != 'never' else 1000}"/>
+                                           t-attf-max="#{(product.sudo().qty_available - product.product_variant_id.cart_qty) if product.sudo().inventory_availability != 'never' else 1000}"/>
                                     <div class="input-group-append">
                                         <a t-attf-href="#" class="btn btn-secondary float_left js_add_cart_json"
                                            aria-label="Add one" title="Add one">

@@ -14,7 +14,7 @@ class ProductTemplate(models.Model):
     def _get_product_stock(self):
         default_location_id = self.env['ir.config_parameter'].sudo().get_param(
             'mobile_device_sale.mobile_stock_location')
-        stock_location = self.env['stock.location'].browse(int(default_location_id))
+        stock_location = self.env['stock.location'].sudo().browse(int(default_location_id))
 
         for template in self:
             template_quants = self.env['stock.quant'].sudo()._gather(template.product_variant_id, stock_location)
