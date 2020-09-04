@@ -102,7 +102,7 @@ class WebsiteSale(WebsiteSale):
                 yield {'loc': loc}
 
     def get_product_brands(self, products):
-        return products.mapped('product_brand_id')
+        return products.sudo().mapped('product_brand_id')
 
     def generate_lot_filter(self, **kwargs):
         operand = ' and '
@@ -162,6 +162,16 @@ class WebsiteSale(WebsiteSale):
             return products.filtered(lambda p: p.id in product_ids)
         else:
             return products
+
+    def check_products_stock(self, products):
+        products_recordset = products
+        for product in products:
+            product_qty = self.get_product_quants(product.product_variant_id)
+            if product_qty <= 0:
+                if product.inventory_availability in ['always', 'threshold']:
+                    products_recordset -= product
+
+        return products_recordset
 
     @http.route([
         '''/shop''',
@@ -249,13 +259,13 @@ class WebsiteSale(WebsiteSale):
             domain = self._get_search_domain(search, category, attrib_values)
             product_models = []
 
-            domain += [('qty_available', '>', 0)]
+            domain += [('stock_qty', '>', 0)]
 
             if brand_list:
                 domain += [('product_brand_id', 'in', brand_set)]
                 product_models = request.env['product.template'].search([
                     ('product_brand_id', 'in', brand_set),
-                    ('qty_available', '!=', 0)]).mapped('x_studio_modelo')
+                    ('stock_qty', '!=', 0)]).mapped('x_studio_modelo')
 
             if specs_post['device_model'] != '0':
                 domain += [('x_studio_modelo', '=', specs_post['device_model'])]
@@ -282,7 +292,8 @@ class WebsiteSale(WebsiteSale):
 
             all_products_with_stock = Product.search([('website_published', '=', True),
                                                       ('website_id', '=', int(website_for_sell)),
-                                                      ('qty_available', '>', 0)])  # before virtual_available
+                                                      ('stock_qty', '>', 0)])  # before virtual_available
+            all_products_with_stock = self.check_products_stock(all_products_with_stock)
             product_brands = self.get_product_brands(all_products_with_stock)
             search_product = Product.search(domain)
             website_domain = request.website.website_domain()
@@ -326,8 +337,8 @@ class WebsiteSale(WebsiteSale):
             # device_lang = request.env['x_idioma_terminal'].sudo().search([])
             device_applications = request.env['x_terminal_aplicaciones'].sudo().search([])
 
-            # products = products.filtered(lambda p: p.virtual_available > 0)
-            device_capacity = products.mapped('x_studio_capacidad_de_almacenamiento')
+            products = self.check_products_stock(products)
+            device_capacity = products.sudo().mapped('x_studio_capacidad_de_almacenamiento')
             _logger.info("CAPACITIES: %r", device_capacity)
             if not brand_list:
                 product_models = products.mapped('x_studio_modelo')
@@ -620,7 +631,7 @@ class WebsiteSale(WebsiteSale):
     def get_product_quants(self, product_id, **kwargs):
         default_location_id = request.env['ir.config_parameter'].sudo().get_param(
             'mobile_device_sale.mobile_stock_location')
-        stock_location = request.env['stock.location'].browse(int(default_location_id))
+        stock_location = request.env['stock.location'].sudo().browse(int(default_location_id))
         _logger.info("PRODUCT_ID: %s, LOCATION: %s" % (product_id, stock_location))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product_id, stock_location)
         _logger.info("ALL QUANTS: %r", all_product_quants)
@@ -770,26 +781,30 @@ class WebsiteSale(WebsiteSale):
 
         # get quants to filter available specs
         default_location_id = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.mobile_stock_location')
-        stock_location = request.env['stock.location'].browse(int(default_location_id))
+        stock_location = request.env['stock.location'].sudo().browse(int(default_location_id))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product.product_variant_id, stock_location)
         all_product_quants = all_product_quants.filtered(lambda q: q.reserved_quantity == 0 and q.quantity > 0)
         product_lots = all_product_quants.mapped('lot_id')
+        if int(website_for_sell) == current_website:
+            grades = request.env['x_grado'].search([('x_studio_website_published', '=', True)])
+            # device_colors = request.env['x_color'].search([])
+            device_colors = product_lots.mapped('x_studio_color')
+            # device_lock_status = request.env['x_bloqueo'].search([])
+            device_lock_status = product_lots.mapped('x_studio_bloqueo')
+            # device_logo = request.env['x_logo'].search([])
+            device_logo = product_lots.mapped('x_studio_logo')
+            # device_charger = request.env['x_cargador'].search([])
+            device_charger = product_lots.mapped('x_studio_cargador')
+            # device_network_type = request.env['x_red'].search([])
+            device_network_type = product_lots.mapped('x_studio_red')
+            # device_lang = request.env['x_idioma_terminal'].search([])
+            device_lang = product_lots.mapped('x_studio_idioma')
+            # device_applications = request.env['x_terminal_aplicaciones'].search([])
+            device_applications = product_lots.mapped('x_studio_aplicaciones')
+        else:
+            grades, device_colors, device_lock_status, device_lock_status, device_logo, \
+            device_charger, device_network_type, device_lang, device_applications = [False for i in range(9)]
 
-        grades = request.env['x_grado'].search([('x_studio_website_published', '=', True)])
-        # device_colors = request.env['x_color'].search([])
-        device_colors = product_lots.mapped('x_studio_color')
-        # device_lock_status = request.env['x_bloqueo'].search([])
-        device_lock_status = product_lots.mapped('x_studio_bloqueo')
-        # device_logo = request.env['x_logo'].search([])
-        device_logo = product_lots.mapped('x_studio_logo')
-        # device_charger = request.env['x_cargador'].search([])
-        device_charger = product_lots.mapped('x_studio_cargador')
-        # device_network_type = request.env['x_red'].search([])
-        device_network_type = product_lots.mapped('x_studio_red')
-        # device_lang = request.env['x_idioma_terminal'].search([])
-        device_lang = product_lots.mapped('x_studio_idioma')
-        # device_applications = request.env['x_terminal_aplicaciones'].search([])
-        device_applications = product_lots.mapped('x_studio_aplicaciones')
 
         _logger.info("LOCK STATUS ELEMENTS: %r", device_lock_status)
         return {
@@ -1007,8 +1022,8 @@ class WebsiteSale(WebsiteSale):
     def get_product_variant_quant_info(self, product_template_id=None):
         get_param = request.env['ir.config_parameter'].sudo().get_param
         location_id = int(get_param('mobile_device_sale.standard_stock_location'))
-        location = request.env['stock.location'].browse(location_id)
-        product_obj = request.env['product.template'].browse(int(product_template_id))
+        location = request.env['stock.location'].sudo().browse(location_id)
+        product_obj = request.env['product.template'].sudo().browse(int(product_template_id))
         return self.get_attribute_quants(product_obj, location)
 
     def get_attribute_quants(self, product_template_obj, location):
@@ -1016,6 +1031,6 @@ class WebsiteSale(WebsiteSale):
         for att_value in product_template_obj.valid_product_template_attribute_line_ids.product_template_value_ids:
             pq = 0
             for i in att_value.ptav_product_variant_ids:
-                pq += sum(request.env['stock.quant']._gather(i, location).mapped('quantity'))
+                pq += sum(request.env['stock.quant'].sudo()._gather(i, location).mapped('quantity'))
             att_qty_resume.update({att_value.id: pq})
         return att_qty_resume
