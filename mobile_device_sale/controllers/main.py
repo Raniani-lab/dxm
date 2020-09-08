@@ -621,7 +621,7 @@ class WebsiteSale(WebsiteSale):
     def get_quant_colors(self, product_id, grade):
         default_location_id = request.env['ir.config_parameter'].sudo().get_param(
             'mobile_device_sale.mobile_stock_location')
-        stock_location = request.env['stock.location'].browse(int(default_location_id))
+        stock_location = request.env['stock.location'].sudo().browse(int(default_location_id))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product_id, stock_location)
         lot_filter = 'q.lot_id.x_studio_revision_grado.id == %s' % grade
         quants_filtered = all_product_quants.filtered(lambda q: eval(lot_filter))
@@ -1031,6 +1031,9 @@ class WebsiteSale(WebsiteSale):
         for att_value in product_template_obj.valid_product_template_attribute_line_ids.product_template_value_ids:
             pq = 0
             for i in att_value.ptav_product_variant_ids:
-                pq += sum(request.env['stock.quant'].sudo()._gather(i, location).mapped('quantity'))
+                quants = request.env['stock.quant'].sudo()._gather(i, location)
+                quants = quants.filtered(lambda q: q.quantity > 0)  # q.reserved_quantity == 0 and
+                available = sum(quants.mapped('quantity')) - sum(quants.mapped('reserved_quantity'))
+                pq += available
             att_qty_resume.update({att_value.id: pq})
         return att_qty_resume
