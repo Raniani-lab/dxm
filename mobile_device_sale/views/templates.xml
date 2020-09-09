@@ -193,9 +193,17 @@
                                 Available
                             </t>
                             <t t-if="product.sudo().virtual_available &lt;= product.available_threshold">
-                                <t t-esc="int(product.sudo().virtual_available)"/>
+
+                                <t t-if="product.sudo().virtual_available &gt; 0">
+                                    <t t-esc="int(product.sudo().virtual_available)"/>
+                                </t>
+                                <t t-if="product.sudo().virtual_available &lt;= 0">
+                                    No Stock
+                                </t>
+
                             </t>
                         </t>
+
                         <t t-if="product.inventory_availability == 'never'">
 
                             <t t-if="product.sudo().virtual_available &gt; 0">
@@ -206,6 +214,7 @@
                             </t>
 
                         </t>
+
                         <t t-if="product.inventory_availability == 'always'">
 
                             <t t-if="product.sudo().virtual_available &gt; 0">
@@ -435,15 +444,23 @@
                     Stock:
                     <span class="oct_product_qty">
 
-                        <t t-if="product.sudo().inventory_availability == 'threshold'">
-                            <t t-if="product.sudo().virtual_available &gt; product.sudo().available_threshold">
+                        <t t-if="product.inventory_availability == 'threshold'">
+                            <t t-if="product.sudo().virtual_available &gt; product.available_threshold">
                                 Available
                             </t>
-                            <t t-if="product.sudo().virtual_available &lt;= product.sudo().available_threshold">
-                                <t t-esc="int(product.sudo().virtual_available)"/>
+                            <t t-if="product.sudo().virtual_available &lt;= product.available_threshold">
+
+                                <t t-if="product.sudo().virtual_available &gt; 0">
+                                    <t t-esc="int(product.sudo().virtual_available)"/>
+                                </t>
+                                <t t-if="product.sudo().virtual_available &lt;= 0">
+                                    No Stock
+                                </t>
+
                             </t>
                         </t>
-                        <t t-if="product.sudo().inventory_availability == 'never'">
+
+                        <t t-if="product.inventory_availability == 'never'">
 
                             <t t-if="product.sudo().virtual_available &gt; 0">
                                 <t t-esc="int(product.sudo().virtual_available)"/>
@@ -453,9 +470,10 @@
                             </t>
 
                         </t>
-                        <t t-if="product.sudo().inventory_availability == 'always'">
 
-                             <t t-if="product.sudo().virtual_available &gt; 0">
+                        <t t-if="product.inventory_availability == 'always'">
+
+                            <t t-if="product.sudo().virtual_available &gt; 0">
                                 <t t-esc="int(product.sudo().virtual_available)"/>
                             </t>
                             <t t-if="product.sudo().virtual_available &lt;= 0">

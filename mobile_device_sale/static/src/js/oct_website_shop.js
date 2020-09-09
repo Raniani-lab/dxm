@@ -32,10 +32,6 @@ odoo.define('oct_website_sale.sale', function (require) {
                         var inventory_policy = product_container.find('.oct_stock_qty').data('inventory-policy');
                         var available_threshold = product_container.find('.oct_stock_qty').data('inventory-threshold');
 
-
-
-
-
                         // product_container.find(".o_wsale_product_btn").hide();
                         ajax.jsonRpc('/shop/get_product_info/grid', 'call', {
                             product_id: product_id,
@@ -50,16 +46,21 @@ odoo.define('oct_website_sale.sale', function (require) {
                                 specs_quant_container.html(specs_quant);
                                 // specs_paragraph.removeClass('oct_hidden');
                                 // console.log(data.product_data);
+                                var total_price = 0;
+                                var total_stock = 0;
+                                console.log(data.product_data)
                                 for (var product_grade_id in data.product_data){
-                                    // console.log(data.product_data[product_grade_id]);
                                     var price = data.product_data[product_grade_id][0];
                                     var stock = data.product_data[product_grade_id][1];
+                                    total_price += price;
+                                    total_stock += stock;
                                     var label_selector = 'label[data-grade-id="'+ product_grade_id + '"]';
                                     var grade_label = product_container.find(label_selector);
                                     var price_container = grade_label.find('.price');
                                     price_container.html(price);
                                     var stock_container = grade_label.find('.stock');
 
+                                    if (price != 0){
 
                                         if (inventory_policy === 'never'){
 
@@ -73,13 +74,13 @@ odoo.define('oct_website_sale.sale', function (require) {
                                             }
 
                                         } else if (inventory_policy === 'always') {
-
                                             if (stock > 0){
                                                 stock_container.html(stock);
                                             } else {
                                                 grade_label.find('input').prop('disabled', true);
                                                 stock_container.html(stock);
                                                 grade_label.addClass("oct_no_stock");
+                                                grade_label.hide();
                                             }
 
                                         } else if (inventory_policy === 'threshold') {
@@ -98,10 +99,22 @@ odoo.define('oct_website_sale.sale', function (require) {
                                                 grade_label.find('input').prop('disabled', true);
                                                 stock_container.html(stock);
                                                 grade_label.addClass("oct_no_stock");
+                                                grade_label.hide();
 
                                             }
 
                                         }
+
+
+                                    } else {
+
+                                        grade_label.find('input').prop('disabled', true);
+                                        grade_label.addClass("oct_no_stock");
+                                        grade_label.hide();
+
+                                    }
+
+
 
 
 
@@ -154,40 +167,61 @@ odoo.define('oct_website_sale.sale', function (require) {
                             price_container.html(price);
                             var stock_container = grade_label.find('.stock');
 
+                            if (price != 0){
 
-                                if (inventory_policy === 'always') {
+                                        if (inventory_policy === 'never'){
 
-                                    stock_container.html(stock);
-                                    if (stock === 0){
-                                        grade_label.addClass("oct_no_stock");
-                                        grade_label.find('input').prop('disabled', true);
-                                    }
+                                            grade_label.find('input').prop('disabled', false);
+                                            grade_label.find('input').prop('max', 1000);
 
-                                } else if (inventory_policy === 'threshold'){
+                                            if (stock > 0){
+                                                stock_container.html(stock);
+                                            } else {
+                                                stock_container.html("On Demand");
+                                            }
 
-                                    if (parseInt(stock) > available_threshold) {
-                                        console.log("STOCK > AVAILABLE")
-                                        stock_container.html("Available");
-                                    }
-                                    grade_label.find('input').prop('max', stock);
-                                    if (stock === 0){
-                                        grade_label.addClass("oct_no_stock");
-                                        stock_container.html(stock);
-                                    }
-                                    if (stock < available_threshold  && stock !== 0){
-                                        stock_container.html(stock);
-                                    }
+                                        } else if (inventory_policy === 'always') {
 
-                                } else if (inventory_policy === 'never'){
-                                    if (stock !== 0) {
-                                        stock_container.html(stock);
+                                            if (stock > 0){
+                                                stock_container.html(stock);
+                                            } else {
+                                                grade_label.find('input').prop('disabled', true);
+                                                stock_container.html(stock);
+                                                grade_label.addClass("oct_no_stock");
+                                                grade_label.hide();
+                                            }
+
+                                        } else if (inventory_policy === 'threshold') {
+
+                                            if (stock > available_threshold){
+
+                                                stock_container.html("Available");
+
+                                            } else if (stock <= available_threshold && stock !== 0) {
+
+                                                grade_label.find('input').prop('disabled', false);
+                                                stock_container.html(stock);
+
+                                            } else if (stock === 0){
+
+                                                grade_label.find('input').prop('disabled', true);
+                                                stock_container.html(stock);
+                                                grade_label.addClass("oct_no_stock");
+                                                grade_label.hide();
+
+                                            }
+
+                                        }
+
+
                                     } else {
-                                        stock_container.html("On Demand");
+
+                                        grade_label.find('input').prop('disabled', true);
+                                        grade_label.addClass("oct_no_stock");
+                                        grade_label.hide();
+
                                     }
 
-                                    grade_label.find('input').prop('disabled', false);
-                                    grade_label.find('input').prop('max', 1000);
-                                }
 
 
                         }
