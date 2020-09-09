@@ -10,9 +10,12 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class Factura(models.Model):
     _inherit = 'account.move'
 
+    #SOBREESCRIBO LA FUNCION ORIGINAL QUE ESTA EN EL MODELO account.move HERENDANDO DEL MISMO
+    #PARA PODER UTILIZARLA PORQUE LA ORIGINAL ESTA PRIVADA CON _
     def get_invoiced_lot_values(self):
         """ Get and prepare data to show a table of invoiced lot on the invoice's report. """
         self.ensure_one()
@@ -24,8 +27,8 @@ class Factura(models.Model):
         stock_move_lines = sale_orders.mapped('picking_ids.move_lines.move_line_ids')
 
         # Get the other customer invoices and refunds.
-        ordered_invoice_ids = sale_orders.mapped('invoice_ids')\
-            .filtered(lambda i: i.state not in ['draft', 'cancel'])\
+        ordered_invoice_ids = sale_orders.mapped('invoice_ids') \
+            .filtered(lambda i: i.state not in ['draft', 'cancel']) \
             .sorted(lambda i: (i.invoice_date, i.id))
 
         # Get the position of self in other customer invoices and refunds.
@@ -46,6 +49,7 @@ class Factura(models.Model):
         self_datetime = max(write_dates) if write_dates else None
         last_write_dates = last_invoice and [wd for wd in last_invoice.invoice_line_ids.mapped('write_date') if wd]
         last_invoice_datetime = max(last_write_dates) if last_write_dates else None
+
         def _filter_incoming_sml(ml):
             if ml.state == 'done' and ml.location_id.usage == 'customer' and ml.lot_id:
                 if last_invoice_datetime:
@@ -88,7 +92,8 @@ class Factura(models.Model):
                 'uom_name': lot_id.product_uom_id.name,
                 'lot_name': lot_id.name
             })
-        _logger.info("<<<<<<<<<<<<<<<ME ENTRA EN LA FUNCION Y LO QUE ME TRAE LOT_VALUES ES:>>>>>>>>>>>>>>> %r", lot_values)
+        #AQUI ORDENO TODOS LOS LOTES QUE ME QUEDAN EN lot_values POR EL COLOR
+        lot_values.sort(key=lambda r: r['product_color'], reverse=False)
         return lot_values
 
 
