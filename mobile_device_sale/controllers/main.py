@@ -153,29 +153,31 @@ class WebsiteSale(WebsiteSale):
         # _logger.info("ALL LOTS: %r", lots)
         lot_filter = self.generate_lot_filter(**kwargs)
         # _logger.info("SPEC FILTER: %r", lot_filter)
+        kw = self.normalize_filter_specs_names(**kwargs)
         if len(lot_filter) > 0:
             # _logger.info("FILTERING PRODUCTS BY SPECS.....")
             lots_filtered = lots.filtered(lambda l: eval(lot_filter))
             # _logger.info("LOTS FILTERED: %r", lots_filtered)
             product_ids = lots_filtered.mapped('product_id').mapped('product_tmpl_id').ids
             # _logger.info("PRODUCTS IDS: %r", product_ids)
-            return products.filtered(lambda p: p.id in product_ids)
+            products = products.filtered(lambda p: p.id in product_ids)
+            return self.check_products_stock(products, **kw)
         else:
-            return products
+            return self.check_products_stock(products, **kw)
 
-    def check_products_stock(self, products):
-        _logger.info("CHECKING PRODUCTS STOCK....")
+    def check_products_stock(self, products, **kwargs):
+        # _logger.info("CHECKING PRODUCTS STOCK....")
         products_recordset = products
         for product in products:
-            _logger.info("RECORDSET: %r", products_recordset)
-            _logger.info("CHECKING PRODUCT: %s, VARIANT: %s" % (product.id, product.product_variant_id))
-            product_qty = self.get_product_quants(product.product_variant_id)
-            _logger.info("QTY: %r", product_qty)
+            # _logger.info("RECORDSET: %r", products_recordset)
+            # _logger.info("CHECKING PRODUCT: %s, VARIANT: %s" % (product.id, product.product_variant_id))
+            product_qty = self.get_product_quants(product.product_variant_id, **kwargs)
+            # _logger.info("QTY: %r", product_qty)
             if product_qty <= 0:
-                _logger.info("LESS THAN 0.....")
+                # _logger.info("LESS THAN 0.....")
                 if product.inventory_availability in ['always', 'threshold', False]:
                     products_recordset -= product
-        _logger.info("FINISH CHECK STOCK.....")
+        # _logger.info("FINISH CHECK STOCK.....")
         return products_recordset
 
     @http.route([
@@ -316,9 +318,8 @@ class WebsiteSale(WebsiteSale):
 
             # Apply all filter here.....
 
-            search_product = self.check_products_stock(search_product)
-
             search_product = self.filter_product_by_specs(search_product, **specs_post)
+            # search_product = self.check_products_stock(search_product)
 
             domain += [('id', 'in', search_product.ids)]
             product_count = len(search_product)
@@ -351,20 +352,8 @@ class WebsiteSale(WebsiteSale):
             device_applications = request.env['x_terminal_aplicaciones'].sudo().search([])
             device_capacity = products.sudo().mapped('x_studio_capacidad_de_almacenamiento')
 
-            # products = products.filtered(lambda p: p.id in all_products_with_stock.ids)  #  self.check_products_stock(products)
-
-            # _logger.info("CAPACITIES: %r", device_capacity)
             if not brand_list:
                 product_models = products.mapped('x_studio_modelo')
-
-            _logger.info("BEFORE SPECS FILTER: %r", products)
-            # products = self.filter_product_by_specs(products, **specs_post)
-            _logger.info("AFTER SPECS FILTER: %r", products)
-
-            # update product_count
-            product_count = len(products)
-            # update pager
-            # pager = request.website.pager(url=url, total=product_count, page=page, step=ppg, scope=7, url_args=post)
 
             values = {
                 'search': search,
