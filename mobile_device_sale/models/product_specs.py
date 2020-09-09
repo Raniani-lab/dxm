@@ -47,6 +47,7 @@ class ProductLineSpecs(models.Model):
 
     @api.onchange('quantity')
     def change_qty(self):
+        _logger.info("quantity ONCHANGE.....")
         self._get_grade_colors_domain()
 
     def get_quant_colors(self, product_id, grade, sale_id):
