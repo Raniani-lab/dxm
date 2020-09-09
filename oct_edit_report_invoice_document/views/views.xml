@@ -4,6 +4,7 @@
 <!-- License URL : https://store.webkul.com/license.html/ -->
 <odoo>
     <data>
+        <!--Template editado del original de la factura para ajustar la tabla de los lotes y agrupar los imei por productos-->
         <template id="oct_inherit_report_invoice" inherit_id="sale_stock.sale_stock_report_invoice_document">
             <xpath expr="//table[@name='invoice_snln_table']" position="replace">
                 <table groups="sale_stock.group_lot_on_invoice" class="table table-sm" style="width: 100%;"
@@ -72,6 +73,7 @@
             </xpath>
         </template>
 
+        <!--Nuevo reporte de Facturas por colores-->
         <report
                 id="report_factura_color"
                 string="Imprimir Factura por Colores"
@@ -79,7 +81,8 @@
                 report_type="qweb-pdf"
                 name="oct_edit_report_invoice_document.oct_inherit_report_invoice_color"
         />
-
+        <!--Template del Nuevo reporte de Facturas por colores: Cogi el template original de
+        una factura y le agregue el contenido de los lotes para agrupar los imei por colores-->
         <template id="oct_inherit_report_invoice_color">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
@@ -303,6 +306,8 @@
                                 </p>
                             </div>
                         </div>
+                        <!--Template del Nuevo contenido de los lotes, llamo a la funcion de mi modelo en
+                        este modulo donde ya me vienen los lotes ordenados por colores-->
                         <t t-set="lotes" t-value="o.get_invoiced_lot_values()"/>
                         <t t-if="lotes">
 
