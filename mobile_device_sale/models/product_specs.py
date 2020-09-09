@@ -12,10 +12,13 @@ class ProductLineSpecs(models.Model):
     _description = 'Product line specifications'
 
     def _get_grade_colors_domain(self):
-        color_ids = []
+        color_ids = self.env['x_color'].search([]).ids
+        _logger.info("CONTEXT %r",[self.env.context])
         if self.env.context:
             if 'params' in self.env.context.keys():
+                _logger.info("has params")
                 if self.env.context.get('params').get('model') in ['sale.order.line', 'sale.order']:
+                    _logger.info(self.env.context.get('params'))
                     line_id = self.env.context.get('active_id')
                     active_model = self.env.context.get('active_model')
                     line = False
@@ -36,6 +39,16 @@ class ProductLineSpecs(models.Model):
                         grade = line.product_grade
                         colors = self.get_quant_colors(product, grade.id, order_id)
                         color_ids = colors.ids
+            elif 'active_model' in self.env.context.keys():
+                 if self.env.context.get('active_model') == 'sale.order.line':
+                        line_id = self.env.context.get('active_id')
+                        line = self.env['sale.order.line'].browse(line_id)
+                        order_id = line.order_id
+                        if line:
+                            product = line.product_id
+                            grade = line.product_grade
+                            colors = self.get_quant_colors(product, grade.id, order_id)
+                            color_ids = colors.ids
         return [('id', 'in', color_ids)]
 
     stock_move_line_id = fields.Many2one(comodel_name='stock.move')

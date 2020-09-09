@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
-                <field name="product_grade"/>
+                <field name="product_grade" options="{'no_create': True}"/>
                 <field name="color_relation"/>
             </xpath>
             <xpath expr="//page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
