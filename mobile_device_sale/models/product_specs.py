@@ -17,11 +17,24 @@ class ProductLineSpecs(models.Model):
             if 'params' in self.env.context.keys():
                 if self.env.context.get('params').get('model') in ['sale.order.line', 'sale.order']:
                     line_id = self.env.context.get('active_id')
-                    line = self.env['sale.order.line'].browse(line_id)
+                    active_model = self.env.context.get('active_model')
+                    line = False
+                    order_id = False
+                    if active_model == 'sale.order.line':
+                        line = self.env['sale.order.line'].browse(line_id)
+                        order_id = line.order_id
+                    elif active_model == 'stock.move':
+                        line = self.env['stock.move'].browse(line_id)
+                        source = line.picking_id.origin
+                        sale = self.env['sale.order'].search([('name', '=', source)])
+                        if sale:
+                            order_id = sale
+                        else:
+                            line = False
                     if line:
                         product = line.product_id
                         grade = line.product_grade
-                        colors = self.get_quant_colors(product, grade.id, line.order_id)
+                        colors = self.get_quant_colors(product, grade.id, order_id)
                         color_ids = colors.ids
         return [('id', 'in', color_ids)]
 

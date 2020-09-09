@@ -150,27 +150,34 @@ class WebsiteSale(WebsiteSale):
         product_variants = products.mapped('product_variant_id')
         lots = request.env['stock.production.lot'].sudo().search([('product_id', 'in', product_variants.ids)])
         lots = lots.filtered(lambda l: l.product_qty > 0)
-        _logger.info("ALL LOTS: %r", lots)
+        # _logger.info("ALL LOTS: %r", lots)
         lot_filter = self.generate_lot_filter(**kwargs)
-        _logger.info("SPEC FILTER: %r", lot_filter)
+        # _logger.info("SPEC FILTER: %r", lot_filter)
+        kw = self.normalize_filter_specs_names(**kwargs)
         if len(lot_filter) > 0:
-            _logger.info("FILTERING PRODUCTS BY SPECS.....")
+            # _logger.info("FILTERING PRODUCTS BY SPECS.....")
             lots_filtered = lots.filtered(lambda l: eval(lot_filter))
-            _logger.info("LOTS FILTERED: %r", lots_filtered)
+            # _logger.info("LOTS FILTERED: %r", lots_filtered)
             product_ids = lots_filtered.mapped('product_id').mapped('product_tmpl_id').ids
-            _logger.info("PRODUCTS IDS: %r", product_ids)
-            return products.filtered(lambda p: p.id in product_ids)
+            # _logger.info("PRODUCTS IDS: %r", product_ids)
+            products = products.filtered(lambda p: p.id in product_ids)
+            return self.check_products_stock(products, **kw)
         else:
-            return products
+            return self.check_products_stock(products, **kw)
 
-    def check_products_stock(self, products):
+    def check_products_stock(self, products, **kwargs):
+        # _logger.info("CHECKING PRODUCTS STOCK....")
         products_recordset = products
         for product in products:
-            product_qty = self.get_product_quants(product.product_variant_id)
+            # _logger.info("RECORDSET: %r", products_recordset)
+            # _logger.info("CHECKING PRODUCT: %s, VARIANT: %s" % (product.id, product.product_variant_id))
+            product_qty = self.get_product_quants(product.product_variant_id, **kwargs)
+            # _logger.info("QTY: %r", product_qty)
             if product_qty <= 0:
-                if product.inventory_availability in ['always', 'threshold']:
+                # _logger.info("LESS THAN 0.....")
+                if product.inventory_availability in ['always', 'threshold', False]:
                     products_recordset -= product
-
+        # _logger.info("FINISH CHECK STOCK.....")
         return products_recordset
 
     @http.route([
@@ -259,7 +266,7 @@ class WebsiteSale(WebsiteSale):
             domain = self._get_search_domain(search, category, attrib_values)
             product_models = []
 
-            domain += [('stock_qty', '>', 0)]
+            # domain += [('stock_qty', '>', 0)]
 
             if brand_list:
                 domain += [('product_brand_id', 'in', brand_set)]
@@ -292,7 +299,7 @@ class WebsiteSale(WebsiteSale):
 
             all_products_with_stock = Product.search([('website_published', '=', True),
                                                       ('website_id', '=', int(website_for_sell)),
-                                                      ('stock_qty', '>', 0)])  # before virtual_available
+                                                      ('virtual_available', '>', 0)])  # before virtual_available
             all_products_with_stock = self.check_products_stock(all_products_with_stock)
             product_brands = self.get_product_brands(all_products_with_stock)
             search_product = Product.search(domain)
@@ -309,14 +316,21 @@ class WebsiteSale(WebsiteSale):
             if category:
                 url = "/shop/category/%s" % slug(category)
 
+            # Apply all filter here.....
+
+            search_product = self.filter_product_by_specs(search_product, **specs_post)
+            # search_product = self.check_products_stock(search_product)
+
+            domain += [('id', 'in', search_product.ids)]
             product_count = len(search_product)
             pager = request.website.pager(url=url, total=product_count, page=page, step=ppg, scope=7, url_args=post)
+
             products = Product.search(domain, limit=ppg, offset=pager['offset'], order=self._get_search_order(post))
 
             ProductAttribute = request.env['product.attribute']
             if products:
                 # get all products without limit
-                _logger.info("GETTING ATTRIBUTES WITH PRODUCT LIST: %r", search_product.ids)
+                # _logger.info("GETTING ATTRIBUTES WITH PRODUCT LIST: %r", search_product.ids)
                 attributes = ProductAttribute.search([('product_tmpl_ids', 'in', search_product.ids)])
             else:
                 attributes = ProductAttribute.browse(attributes_ids)
@@ -336,18 +350,10 @@ class WebsiteSale(WebsiteSale):
             # device_network_type = request.env['x_red'].sudo().search([])
             # device_lang = request.env['x_idioma_terminal'].sudo().search([])
             device_applications = request.env['x_terminal_aplicaciones'].sudo().search([])
-
-            products = self.check_products_stock(products)
             device_capacity = products.sudo().mapped('x_studio_capacidad_de_almacenamiento')
-            _logger.info("CAPACITIES: %r", device_capacity)
+
             if not brand_list:
                 product_models = products.mapped('x_studio_modelo')
-            products = self.filter_product_by_specs(products, **specs_post)
-
-            # update product_count
-            product_count = len(products)
-            # update pager
-            pager = request.website.pager(url=url, total=product_count, page=page, step=ppg, scope=7, url_args=post)
 
             values = {
                 'search': search,
@@ -421,7 +427,7 @@ class WebsiteSale(WebsiteSale):
             cart_qty = self.get_quant_in_cart(sale_order, product_obj, grade=grade, color=color,
                                               lock_status=lock_status, logo=logo, charger=charger,
                                               applications=applications)
-                                                # network_type=network_type, lang=0
+            # network_type=network_type, lang=0
 
         quant_colors = self.get_quant_colors(product_obj.product_variant_id, grade=grade)
         result = {}
@@ -455,7 +461,9 @@ class WebsiteSale(WebsiteSale):
             kwargs.pop('brand')
         if 'search' in kwargs.keys():
             kwargs.pop('search')
-        normalized_specs_filter = {x.split('_')[1] if len(x.split('_')) == 2 else '_'.join([x.split('_')[1], x.split('_')[2]]): int(kwargs[x]) for x in kwargs}
+        normalized_specs_filter = {
+            x.split('_')[1] if len(x.split('_')) == 2 else '_'.join([x.split('_')[1], x.split('_')[2]]): int(kwargs[x])
+            for x in kwargs}
         _logger.info("NORMALIZED SPECS FILTER: %r", normalized_specs_filter)
         return normalized_specs_filter
 
@@ -481,12 +489,13 @@ class WebsiteSale(WebsiteSale):
 
         if not grade:
             specs_quant = self.get_product_quants(product_obj.product_variant_id, **specs_filter)
-            grades = request.env['x_grado'].sudo().search([('x_studio_website_published', '=', True)])  # ('x_studio_is_grade_test', '=', True)
+            grades = request.env['x_grado'].sudo().search(
+                [('x_studio_website_published', '=', True)])  # ('x_studio_is_grade_test', '=', True)
             for grade in grades:
                 product_price = pricelist_obj.get_product_price(product_obj, 1, partner_id, grade=grade.id, date=today)
                 product_quants = self.get_product_quants(product_obj.product_variant_id, grade=grade.id, **specs_filter)
 
-                _logger.info("PRODUCT QUANTS: %r", product_quants)
+                # _logger.info("PRODUCT QUANTS: %r", product_quants)
                 result.update({grade.id: [product_price, product_quants]})
 
             return {'product_id': product_id, 'specs_quant': specs_quant, 'product_data': result}
@@ -496,7 +505,7 @@ class WebsiteSale(WebsiteSale):
             sale_order = request.website.sale_get_order()
             specs_filter.update({'grade': int(grade)})
             if sale_order:
-                _logger.info("SALE ORDER IN GET PRODUCT INFO: %r", sale_order)
+                # _logger.info("SALE ORDER IN GET PRODUCT INFO: %r", sale_order)
                 cart_qty = self.get_quant_in_cart(sale_order, product_obj, **specs_filter)
             specs_filter.pop('grade')
             result.update({'product_id': product_obj.product_variant_id.id})
@@ -540,7 +549,8 @@ class WebsiteSale(WebsiteSale):
 
             specs_quant = self.get_product_quants(product_obj.product_variant_id, **specs_filter)
             specs_filter.pop('grade')
-            grades = request.env['x_grado'].sudo().search([('x_studio_website_published', '=', True)])  # ('x_studio_is_grade_test', '=', True)
+            grades = request.env['x_grado'].sudo().search(
+                [('x_studio_website_published', '=', True)])  # ('x_studio_is_grade_test', '=', True)
             for grade in grades:
                 product_price = pricelist_obj.get_product_price(product_obj, 1, partner_id, grade=grade.id, date=today)
                 product_quants = self.get_product_quants(product_obj.product_variant_id, grade=grade.id, **specs_filter)
@@ -621,7 +631,7 @@ class WebsiteSale(WebsiteSale):
     def get_quant_colors(self, product_id, grade):
         default_location_id = request.env['ir.config_parameter'].sudo().get_param(
             'mobile_device_sale.mobile_stock_location')
-        stock_location = request.env['stock.location'].browse(int(default_location_id))
+        stock_location = request.env['stock.location'].sudo().browse(int(default_location_id))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product_id, stock_location)
         lot_filter = 'q.lot_id.x_studio_revision_grado.id == %s' % grade
         quants_filtered = all_product_quants.filtered(lambda q: eval(lot_filter))
@@ -632,9 +642,9 @@ class WebsiteSale(WebsiteSale):
         default_location_id = request.env['ir.config_parameter'].sudo().get_param(
             'mobile_device_sale.mobile_stock_location')
         stock_location = request.env['stock.location'].sudo().browse(int(default_location_id))
-        _logger.info("PRODUCT_ID: %s, LOCATION: %s" % (product_id, stock_location))
+        # _logger.info("PRODUCT_ID: %s, LOCATION: %s" % (product_id, stock_location))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product_id, stock_location)
-        _logger.info("ALL QUANTS: %r", all_product_quants)
+        # _logger.info("ALL QUANTS: %r", all_product_quants)
         # reserved_filter = 'q.reserved_quantity == 1'
         lot_filter = 'q.reserved_quantity == 0 and q.quantity > 0'
         operand = " and "
@@ -688,12 +698,12 @@ class WebsiteSale(WebsiteSale):
             elif kwargs.get('applications') != 0:
                 lot_filter = "q.lot_id.x_studio_aplicaciones.id == %s" % kwargs.get('applications')
 
-        _logger.info("LOT FILTER: %r", lot_filter)
+        # _logger.info("LOT FILTER: %r", lot_filter)
         reserved_quants = 0
         if len(lot_filter) > 0:
             # reserved_quants = len(all_product_quants.filtered(lambda  q: eval(reserved_filter)))
             quants_filtered = all_product_quants.filtered(lambda q: eval(lot_filter))
-            _logger.info("QUANTS FILTERED: %r", quants_filtered)
+            # _logger.info("QUANTS FILTERED: %r", quants_filtered)
         else:
             quants_filtered = all_product_quants
 
@@ -719,7 +729,6 @@ class WebsiteSale(WebsiteSale):
         #         raise ValidationError("No more products in stock")
 
         value = order._cart_update(product_id=product_id, line_id=line_id, add_qty=add_qty, set_qty=set_qty, **kwargs)
-
 
         if not order.cart_quantity:
             request.website.sale_reset()
@@ -780,7 +789,8 @@ class WebsiteSale(WebsiteSale):
         view_track = request.website.viewref("website_sale.product").track
 
         # get quants to filter available specs
-        default_location_id = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.mobile_stock_location')
+        default_location_id = request.env['ir.config_parameter'].sudo().get_param(
+            'mobile_device_sale.mobile_stock_location')
         stock_location = request.env['stock.location'].sudo().browse(int(default_location_id))
         all_product_quants = request.env['stock.quant'].sudo()._gather(product.product_variant_id, stock_location)
         all_product_quants = all_product_quants.filtered(lambda q: q.reserved_quantity == 0 and q.quantity > 0)
@@ -804,7 +814,6 @@ class WebsiteSale(WebsiteSale):
         else:
             grades, device_colors, device_lock_status, device_lock_status, device_logo, \
             device_charger, device_network_type, device_lang, device_applications = [False for i in range(9)]
-
 
         _logger.info("LOCK STATUS ELEMENTS: %r", device_lock_status)
         return {
@@ -1031,6 +1040,9 @@ class WebsiteSale(WebsiteSale):
         for att_value in product_template_obj.valid_product_template_attribute_line_ids.product_template_value_ids:
             pq = 0
             for i in att_value.ptav_product_variant_ids:
-                pq += sum(request.env['stock.quant'].sudo()._gather(i, location).mapped('quantity'))
+                quants = request.env['stock.quant'].sudo()._gather(i, location)
+                quants = quants.filtered(lambda q: q.quantity > 0)  # q.reserved_quantity == 0 and
+                available = sum(quants.mapped('quantity')) - sum(quants.mapped('reserved_quantity'))
+                pq += available
             att_qty_resume.update({att_value.id: pq})
         return att_qty_resume

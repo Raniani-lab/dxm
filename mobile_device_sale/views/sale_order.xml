@@ -56,13 +56,13 @@
                             <tree editable="bottom" options="{'no_open': True}"> <!-- editable="bottom" -->
 <!--                                <field name="available_qty" readonly="1"/>-->
                                 <field name="quantity" string="Quantity"/>
-                                <field name="color"/>
-                                <field name="lock_status"/>
-                                <field name="logo"/>
-                                <field name="charger" string="SPEC"/>
+                                <field name="color" options="{'no_create': True}"/>
+                                <field name="lock_status" options="{'no_create': True}"/>
+                                <field name="logo" options="{'no_create': True}"/>
+                                <field name="charger" string="SPEC" options="{'no_create': True}"/>
                                 <!--<field name="network_type"/>
                                 <field name="lang"/>-->
-                                <field name="applications"/>
+                                <field name="applications" options="{'no_create': True}"/>
                             </tree>
                         </field>
 

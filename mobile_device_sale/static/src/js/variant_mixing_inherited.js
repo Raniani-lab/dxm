@@ -145,8 +145,17 @@ odoo.define('mobile_device_sale.variant_mixing', function (require) {
             .text(combination.price)
             .trigger('change');
 
+        var inventory_policy = $parent.find('.oct_stock_qty').data('inventory-policy');
+        var available_threshold = $parent.find('.oct_stock_qty').data('inventory-threshold');
         var qty_input = $parent.find('input[name="add_qty"]');
-        qty_input.prop('max', combination.virtual_available - combination.cart_qty);
+
+        if (inventory_policy === 'never'){
+            qty_input.prop('max', 1000);
+        } else if (inventory_policy === 'always') {
+            qty_input.prop('max', combination.virtual_available - combination.cart_qty);
+        } else if (inventory_policy === 'threshold') {
+            qty_input.prop('max', combination.virtual_available - combination.cart_qty);
+        }
 
         this.handleCustomValues($(ev.target));
     },
