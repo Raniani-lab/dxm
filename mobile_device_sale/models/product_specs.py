@@ -45,11 +45,6 @@ class ProductLineSpecs(models.Model):
     def change_grade(self):
         _logger.info("GRADE ONCHANGE.....")
 
-    @api.onchange('quantity')
-    def change_qty(self):
-        _logger.info("quantity ONCHANGE.....")
-        self._get_grade_colors_domain()
-
     def get_quant_colors(self, product_id, grade, sale_id):
         _logger.info("FINDING PRODUCT COLORS.....")
         # get_param = self.env['ir.config_parameter'].sudo().get_param
