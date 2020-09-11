@@ -21,3 +21,9 @@ class ProductTemplate(models.Model):
             lot_filter = 'q.reserved_quantity == 0 and q.quantity > 0'
             quants_filtered = template_quants.filtered(lambda q: eval(lot_filter))
             template.stock_qty = len(quants_filtered)
+
+    def write(self, vals):
+        if 'description_sale' in vals.keys():
+            if vals['description_sale'] == '':
+                vals['description_sale'] = False
+        return super(ProductTemplate, self).write(vals)
