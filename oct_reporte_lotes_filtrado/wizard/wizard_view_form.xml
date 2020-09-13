@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wizard_popup_model_view_stock" model="ir.ui.view">
+        <field name="name">wizard_select_popup_model_stock.form</field>
+        <field name="model">wizard.stock</field>
+        <field name="arch" type="xml">
+            <form string="Nombre de Wizard">
+                <group>
+                    <field name="producto"/>
+                    <field name="marca"/>
+                    <field name="modelo"/>
+                    <field name="part_number"/>
+                    <field name="capacidad"/>
+                    <field name="grado"/>
+                    <field name="cant_a_mano"/>
+                    <field name="cant_prevista"/>
+                    <field name="tarifa_venta"/>
+                </group>
+                <footer>
+                <button name="print_stock" type="object" string="Imprimir"  class="btn-primary"/>
+                <button string="Cancel" special="cancel" class="btn-secundary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

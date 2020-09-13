@@ -1,0 +1,111 @@
+<odoo>
+  <data>
+
+      <record id="action_wizard_stock" model="ir.actions.act_window">
+        <field name="name">Filtre por uno de los siguientes campos para generar su reporte de stock</field>
+        <field name="res_model">wizard.stock</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_popup_model_view_stock"/>
+        <field name="target">new</field>
+      </record>
+
+      <menuitem
+        name="Reportes de stock"
+        id="menu_datos_stock_productos"
+        action="action_wizard_stock"
+        parent="stock.menu_warehouse_report" sequence="110"/>
+
+      <report
+            id="report_stock"
+            string="Reporte de Stock por Productos"
+            model="wizard.stock"
+            report_type="qweb-pdf"
+            file="oct_reporte_lotes_filtrado.reporte_stock"
+            name="oct_reporte_lotes_filtrado.reporte_stock"
+            menu="False"
+        />
+
+<!--    <template id="report_stock">-->
+
+<!--                <t t-foreach="docs" t-as="wizard">-->
+<!--                    <t t-foreach="range(2)" t-as="n">-->
+<!--                        <t t-call="web.basic_layout">-->
+<!--                            <div class="page" style="width: 100%; padding: 10px; height: 1123px;">-->
+
+<!--                                <span style="font-weight: bold; font-size: 22px;">Manifiesto de Pedidos por Transportista</span><br/>-->
+
+<!--                                <span style="font-size: 20px;">Transportista: GLS</span><br/>-->
+
+<!--                                <span style="font-size: 20px;">Fecha: <t t-esc='wizard.pickings_date_time'/></span><br/><br/>-->
+
+<!--                                <span style="font-size: 20px; text-align: center; padding-left: 42%">Listado de Pedidos</span><br/><br/>-->
+
+<!--                                <div style="display:table;">-->
+<!--                                    <div style="display:table-row-group">-->
+
+<!--                                                    <div style="display:table-row;">-->
+<!--                                                        <div style="display:table-cell; font-weight: bold; width: 120px; text-align: center;">No. Picking</div>-->
+<!--                                                        <div style="display:table-cell; font-weight: bold; width: 200px; padding-left: 5px; text-align: center;">Doc. Origen</div>-->
+<!--                                                        <div style="display:table-cell; font-weight: bold; width: 100px; padding-left: 5px;">Cant. Bultos</div>-->
+<!--                                                        <div style="display:table-cell; font-weight: bold; width: 450px; padding-left: 5px; text-align: center;">Dirección Envío</div>-->
+<!--                                                    </div>-->
+
+<!--                                        <t t-set="bultos_transportista" t-value="0"/>-->
+
+<!--                                                        &lt;!&ndash;Tabla con el listado de los pickings &ndash;&gt;-->
+<!--                                                        <t t-foreach="wizard.pedido" t-as="line">-->
+
+<!--                                                            <t t-if="line.carrier_id.delivery_type == 'gls'">-->
+<!--                                                                <t t-if="line.picking_type_id.code == 'outgoing'">-->
+<!--                                                                    <t t-if="line.state == 'done'">-->
+<!--                                                                        <div style="display:table-row;">-->
+<!--                                                                            <span style="display:table-cell; width: 120px; text-align: center;"><t t-esc="line.display_name"/></span>-->
+<!--                                                                            <span style="display:table-cell; width: 200px; padding-left: 5px; text-align: center;"><t t-esc="line.origin"/></span>-->
+<!--                                                                            <span style="display:table-cell; width: 100px; padding-left: 5px; text-align: center;">-->
+<!--                                                                                    <t t-set="cajas" t-value="0"></t>-->
+<!--                                                                                    <t t-set="lineas_con_caja" t-value="0"></t>-->
+<!--                                                                                    <t t-set="lineas_totales" t-value="0"></t>-->
+<!--                                                                                    <t t-foreach="line.package_ids" t-as="paquetes">-->
+<!--                                                                                        <t t-if="paquetes.id">-->
+<!--                                                                                            <t t-set="cajas" t-value="cajas + 1"/>-->
+<!--                                                                                        </t>-->
+<!--                                                                                    </t>-->
+<!--                                                                                    <t t-foreach="line.move_line_ids" t-as="pase">-->
+<!--                                                                                        <t t-if="pase.result_package_id">-->
+<!--                                                                                            <t t-set="lineas_con_caja" t-value="lineas_con_caja + 1"></t>-->
+<!--                                                                                            <t t-set="lineas_totales" t-value="lineas_totales + 1"></t>-->
+<!--                                                                                        </t>-->
+<!--                                                                                        <t t-else="">-->
+<!--                                                                                            <t t-set="lineas_totales" t-value="lineas_totales + 1"></t>-->
+<!--                                                                                        </t>-->
+<!--                                                                                    </t>-->
+<!--                                                                                    <t t-if="lineas_totales > lineas_con_caja">-->
+<!--                                                                                        <t t-esc="cajas + 1"></t>-->
+<!--                                                                                        <t t-set="bultos_transportista" t-value="bultos_transportista + cajas + 1"></t>-->
+<!--                                                                                    </t>-->
+<!--                                                                                    <t t-else="">-->
+<!--                                                                                        <t t-esc="cajas"></t>-->
+<!--                                                                                        <t t-set="bultos_transportista" t-value="bultos_transportista + cajas"></t>-->
+<!--                                                                                    </t>-->
+<!--                                                                            </span>-->
+<!--                                                                            <span style="display:table-cell; width: 450px; padding-left: 5px;"><t t-esc="line.partner_id.contact_address"/></span>-->
+<!--                                                                         <br/>-->
+<!--                                                                        </div>-->
+<!--                                                                    </t>-->
+<!--                                                                </t>-->
+<!--                                                            </t>-->
+<!--                                                        </t>-->
+<!--                                                </div>-->
+<!--                                </div><br/><br/>-->
+<!--                                <span style="display:table-row; font-weight: bold; width: 250px;">Total de bultos: <t t-esc="bultos_transportista"></t></span><br/>-->
+<!--                                <span style="display:table-row; width: 500px;">Transportista: ____________________________________________________________________</span><br/>-->
+<!--                                <span style="display:table-row; width: 250px;">Firma: _________________________</span>-->
+<!--                                <div style="page-break-after: always;"/>-->
+
+<!--                            </div>-->
+<!--                        </t>-->
+<!--                    </t>-->
+<!--                </t>-->
+<!--      </template>-->
+  </data>
+</odoo>
