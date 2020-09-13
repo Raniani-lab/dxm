@@ -17,6 +17,13 @@ class Wizard_Stock(models.TransientModel):
     cant_a_mano = fields.Float("Cantidad a Mano")
     cant_prevista = fields.Float("Cantidad Prevista")
     tarifa_venta = fields.Float("Tarifa de Venta")
+    color = fields.Many2one('x_color', string="Capacidad de Almacenamiento")
+    idioma = fields.Many2one('x_idioma_terminal', string="Idioma")
+    cargador = fields.Many2one('x_cargador', string="Cargador")
+    logo = fields.Many2one('x_logo', string="Logo")
+    aplicaciones = fields.Many2one('x_terminal_aplicaciones', string="Aplicaciones")
+    bloqueo = fields.Many2one('x_bloqueo', string="Bloqueo Operador")
+
 
 
     # @api.onchange('pickings_date_time')
@@ -28,6 +35,9 @@ class Wizard_Stock(models.TransientModel):
     #         self.write({'pedido': mis_pedidos})
     #
     #
-    def print_stock(self):
-        return self.env.ref('oct_reporte_lotes_filtrado.report_stock').report_action(self)
+    def print_stock_resumido(self):
+        return self.env.ref('oct_reporte_lotes_filtrado.report_stock_resumido').report_action(self)
+
+    def print_stock_ampliado(self):
+        return self.env.ref('oct_reporte_lotes_filtrado.report_stock_ampliado').report_action(self)
 
