@@ -16,6 +16,12 @@
                     <field name="cant_a_mano"/>
                     <field name="cant_prevista"/>
                     <field name="tarifa_venta"/>
+                    <field name="color"/>
+                    <field name="idioma"/>
+                    <field name="cargador"/>
+                    <field name="logo"/>
+                    <field name="aplicaciones"/>
+                    <field name="bloqueo"/>
                 </group>
                 <footer>
                 <button name="print_stock_resumido" type="object" string="Imprimir Stock Resumido"  class="btn-primary"/>

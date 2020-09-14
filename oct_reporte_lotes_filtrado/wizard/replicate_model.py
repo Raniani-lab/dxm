@@ -17,7 +17,7 @@ class Wizard_Stock(models.TransientModel):
     cant_a_mano = fields.Float("Cantidad a Mano")
     cant_prevista = fields.Float("Cantidad Prevista")
     tarifa_venta = fields.Float("Tarifa de Venta")
-    color = fields.Many2one('x_color', string="Capacidad de Almacenamiento")
+    color = fields.Many2one('x_color', string="Color")
     idioma = fields.Many2one('x_idioma_terminal', string="Idioma")
     cargador = fields.Many2one('x_cargador', string="Cargador")
     logo = fields.Many2one('x_logo', string="Logo")
