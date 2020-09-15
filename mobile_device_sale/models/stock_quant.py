@@ -26,14 +26,14 @@ class StockQuant(models.Model):
         :return: a list of tuples (quant, quantity_reserved) showing on which quant the reservation
             was done and how much the system was able to reserve on it
         """
-        _logger.info("UPDATE RESERVED QUANTS CUSTOM")
+        #_logger.info("UPDATE RESERVED QUANTS CUSTOM")
         self = self.sudo()
         rounding = product_id.uom_id.rounding
         quants = self._gather(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id,
                               strict=strict)
         reserved_quants = []
 
-        _logger.info("QUANTS FROM UPDATE RESERVED: %r", quants)
+        #_logger.info("QUANTS FROM UPDATE RESERVED: %r", quants)
         # Apply product specifications filter
         # if specs_filter:
             # quants = quants.filtered(lambda q: eval(specs_filter))
@@ -63,18 +63,18 @@ class StockQuant(models.Model):
 
         if specs_filter:
             for specs in specs_filter:
-                _logger.info("!!!!!! ITERATING IN FILTER.....")
+                #_logger.info("!!!!!! ITERATING IN FILTER.....")
 
-                _logger.info("FILTER QUANTITY: %r", specs[0])
+                #_logger.info("FILTER QUANTITY: %r", specs[0])
                 filtered_quants = quants.filtered(lambda q: eval(specs[1]))
                 quantity = specs[0]
                 for quant in filtered_quants:
 
                     if float_compare(quantity, 0, precision_rounding=rounding) > 0:
-                        _logger.info("IN FLOAT COMPARE")
-                        _logger.info("FLOAT COMPARE: %r", float_compare(quantity, 0, precision_rounding=rounding))
+                        #_logger.info("IN FLOAT COMPARE")
+                        #_logger.info("FLOAT COMPARE: %r", float_compare(quantity, 0, precision_rounding=rounding))
                         max_quantity_on_quant = quant.quantity - quant.reserved_quantity
-                        _logger.info("MAX QUANT: %r", max_quantity_on_quant)
+                        #_logger.info("MAX QUANT: %r", max_quantity_on_quant)
                         if float_compare(max_quantity_on_quant, 0, precision_rounding=rounding) <= 0:
                             _logger.info("FLOAT COMPARE <= 0.... SO CONTINUE")
                             _logger.info("FLOAT COMPARE NOW: %r",
@@ -86,7 +86,7 @@ class StockQuant(models.Model):
                         quantity -= max_quantity_on_quant
                         available_quantity -= max_quantity_on_quant
                     else:
-                        _logger.info("NOT FLOAT COMPARE")
+                        #_logger.info("NOT FLOAT COMPARE")
                         max_quantity_on_quant = min(quant.reserved_quantity, abs(quantity))
                         quant.reserved_quantity -= max_quantity_on_quant
                         reserved_quants.append((quant, -max_quantity_on_quant))
