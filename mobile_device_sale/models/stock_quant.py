@@ -118,6 +118,7 @@ class StockQuant(models.Model):
                     quantity -= max_quantity_on_quant
                     available_quantity -= max_quantity_on_quant
                 else:
+
                     #_logger.info("NOT FLOAT COMPARE")
                     max_quantity_on_quant = min(quant.reserved_quantity, abs(quantity))
                     quant.reserved_quantity -= max_quantity_on_quant
