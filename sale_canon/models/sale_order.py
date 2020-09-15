@@ -27,7 +27,8 @@ class SaleOrder(models.Model):
     def order_process_canon(self):
         order_canon_ids = self.order_line.mapped('product_id.categ_id.digital_canon_id')
         _logger.info("CANONs IN THIS ORDER: %r", order_canon_ids)
-        if order_canon_ids:
+        apply_for_canon = self.partner_id.property_account_position_id.apply_digital_canon
+        if order_canon_ids and apply_for_canon:
             for canon in order_canon_ids:
                 canon_order_lines = self.order_line.filtered(lambda l: l.product_id.categ_id.digital_canon_id.id == canon.id)
                 _logger.info("THIS CANON LINES: %r", canon_order_lines)

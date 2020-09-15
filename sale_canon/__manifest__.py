@@ -24,6 +24,7 @@
         'views/digital_canon_views.xml',
         'views/product_category_views.xml',
         'views/sale_order_views.xml',
+        'views/account_fiscal_position.xml',
         'data/digital_canon_data.xml'
     ],
     'installable': True,
