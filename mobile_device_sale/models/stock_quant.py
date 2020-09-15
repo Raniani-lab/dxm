@@ -104,12 +104,12 @@ class StockQuant(models.Model):
 
             for quant in quants:
                 if float_compare(quantity, 0, precision_rounding=rounding) > 0:
-                    _logger.info("IN FLOAT COMPARE")
-                    _logger.info("FLOAT COMPARE: %r", float_compare(quantity, 0, precision_rounding=rounding))
+                    #_logger.info("IN FLOAT COMPARE")
+                    #_logger.info("FLOAT COMPARE: %r", float_compare(quantity, 0, precision_rounding=rounding))
                     max_quantity_on_quant = quant.quantity - quant.reserved_quantity
-                    _logger.info("MAX QUANT: %r", max_quantity_on_quant)
+                    #_logger.info("MAX QUANT: %r", max_quantity_on_quant)
                     if float_compare(max_quantity_on_quant, 0, precision_rounding=rounding) <= 0:
-                        _logger.info("FLOAT COMPARE <= 0.... SO CONTINUE")
+                        #_logger.info("FLOAT COMPARE <= 0.... SO CONTINUE")
                         _logger.info("FLOAT COMPARE NOW: %r", float_compare(max_quantity_on_quant, 0, precision_rounding=rounding))
                         continue
                     max_quantity_on_quant = min(max_quantity_on_quant, quantity)
@@ -118,7 +118,7 @@ class StockQuant(models.Model):
                     quantity -= max_quantity_on_quant
                     available_quantity -= max_quantity_on_quant
                 else:
-                    _logger.info("NOT FLOAT COMPARE")
+                    #_logger.info("NOT FLOAT COMPARE")
                     max_quantity_on_quant = min(quant.reserved_quantity, abs(quantity))
                     quant.reserved_quantity -= max_quantity_on_quant
                     reserved_quants.append((quant, -max_quantity_on_quant))
