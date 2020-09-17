@@ -38,21 +38,21 @@ class StockQuant (models.Model):
                 quant.value = 0
                 continue
             if quant.product_id.cost_method == 'fifo':
-                if quant.lot_id:
+                if quant.lot_id and quant.lot_id.lot_quantity_svl > 0:
                     quantity = quant.lot_id.lot_quantity_svl
                 else:
                     quantity = quant.product_id.quantity_svl
                 if float_is_zero(quantity, precision_rounding=quant.product_id.uom_id.rounding):
                     quant.value = 0.0
                     continue
-                if quant.lot_id:
+                if quant.lot_id and quant.lot_id.lot_value_svl > 0:
                     average_cost = quant.lot_id.lot_value_svl / quantity
                     quant.value = quant.quantity * average_cost
                 else:
                     average_cost = quant.product_id.value_svl / quantity
                     quant.value = quant.quantity * average_cost
             else:
-                if quant.lot_id:
+                if quant.lot_id and quant.lot_id.lot_value_svl > 0:
                     quant.value = quant.quantity * quant.lot_id.lot_value_svl
                 else:
                     quant.value = quant.quantity * quant.product_id.standard_price
