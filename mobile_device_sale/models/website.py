@@ -20,16 +20,16 @@ class Website(models.Model):
         :param int force_pricelist: pricelist_id - if set,  we change the pricelist with this one
         :returns: browse record for the current sales order
         """
-        _logger.info("KW ARGS IN SALE_GET_ORDER: %r", kwargs)
+        # _logger.info("KW ARGS IN SALE_GET_ORDER: %r", kwargs)
         self.ensure_one()
         partner = self.env.user.partner_id
         sale_order_id = request.session.get('sale_order_id')
         if not sale_order_id and not self.env.user._is_public():
             last_order = partner.last_website_so_id
             if last_order:
-                _logger.info("LAST ORDER")
+                # _logger.info("LAST ORDER")
                 available_pricelists = self.get_pricelist_available()
-                _logger.info("AVAILABLE PRICELISTS: %r", available_pricelists)
+                # _logger.info("AVAILABLE PRICELISTS: %r", available_pricelists)
                 # Do not reload the cart of this user last visit if the cart uses a pricelist no longer available.
                 sale_order_id = last_order.pricelist_id in available_pricelists and last_order.id
 
@@ -53,7 +53,7 @@ class Website(models.Model):
 
         # cart creation was requested (either explicitly or to configure a promo code)
         if not sale_order:
-            _logger.info("NOT SALE ORDER.....")
+            # _logger.info("NOT SALE ORDER.....")
             # TODO cache partner_id session
             pricelist = self.env['product.pricelist'].browse(pricelist_id).sudo()
             so_data = self._prepare_sale_order_values(partner, pricelist)
@@ -128,7 +128,7 @@ class Website(models.Model):
 
         # update the pricelist
         if update_pricelist:
-            _logger.info("UPDATE PRICELIST.....")
+            # _logger.info("UPDATE PRICELIST.....")
             request.session['website_sale_current_pl'] = pricelist_id
             values = {'pricelist_id': pricelist_id}
             sale_order.write(values)
@@ -136,14 +136,14 @@ class Website(models.Model):
                 if line.exists():
                     # If not passed kwargs then get parameters from existing order line.
                     if not kwargs:
-                        _logger.info("NOT KWARGS.....")
+                        # _logger.info("NOT KWARGS.....")
                         kwargs = {
                             'grade': line.product_grade.id
                         }
-                        _logger.info("KWARGS FROM LINE %s: %s" % (line.id, kwargs))
+                        # _logger.info("KWARGS FROM LINE %s: %s" % (line.id, kwargs))
                     sale_order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0, **kwargs)
                     kwargs = None
-        _logger.info("ORDER ID: %r", sale_order)
-        _logger.info("PRICE LIST ID: %r", pricelist_id)
-        _logger.info("END SALE_GET_ORDER")
+        # _logger.info("ORDER ID: %r", sale_order)
+        # _logger.info("PRICE LIST ID: %r", pricelist_id)
+        # _logger.info("END SALE_GET_ORDER")
         return sale_order

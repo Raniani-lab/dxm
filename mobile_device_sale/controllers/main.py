@@ -187,14 +187,14 @@ class WebsiteSale(WebsiteSale):
         '''/shop/category/<model("product.public.category"):category>/page/<int:page>'''
     ], type='http', auth="public", website=True, sitemap=sitemap_shop)
     def shop(self, page=0, category=None, search='', ppg=False, **post):
-        _logger.info("ON SHOP INHERITED CONTROLLER")
-        _logger.info("POST ARGS: %r", post)
+        # _logger.info("ON SHOP INHERITED CONTROLLER")
+        # _logger.info("POST ARGS: %r", post)
         active_filter = False
         website_for_sell = request.env['ir.config_parameter'].sudo().get_param('mobile_device_sale.website_for_sell')
         current_website = request.env['website'].get_current_website().id
-        _logger.info("CURRENT WEBSITE: %r", current_website)
+        # _logger.info("CURRENT WEBSITE: %r", current_website)
         if request.env.user.id == 4 and int(website_for_sell) == current_website:
-            _logger.info("REDIRECT TO LOGIN PAGE")
+            # _logger.info("REDIRECT TO LOGIN PAGE")
             return request.redirect('/web/login?redirect=/shop')
         if int(website_for_sell) == current_website:
             mobile_sale = True
@@ -256,9 +256,9 @@ class WebsiteSale(WebsiteSale):
 
             # ppr = request.env['website'].get_current_website().shop_ppr or 4
             ppr = 2
-            _logger.info("CURRENT WEBSITE %r", request.env['website'].get_current_website())
+            # _logger.info("CURRENT WEBSITE %r", request.env['website'].get_current_website())
             attrib_list = request.httprequest.args.getlist('attrib')
-            _logger.info("ATTRIB LIST: %r", attrib_list)
+            # _logger.info("ATTRIB LIST: %r", attrib_list)
             attrib_values = [[int(x) for x in v.split("-")] for v in attrib_list if v]
             attributes_ids = {v[0] for v in attrib_values}
             attrib_set = {v[1] for v in attrib_values}
@@ -280,7 +280,7 @@ class WebsiteSale(WebsiteSale):
             if specs_post['device_capacity'] != '0':
                 domain += [('x_studio_capacidad_de_almacenamiento', '=', int(specs_post['device_capacity']))]
 
-            _logger.info("DOMAIN: %r", domain)
+            # _logger.info("DOMAIN: %r", domain)
 
             keep = QueryURL('/shop', category=category and int(category), search=search, attrib=attrib_list,
                             order=post.get('order'))

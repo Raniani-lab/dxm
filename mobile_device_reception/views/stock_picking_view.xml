@@ -17,7 +17,7 @@
                 <button name="split_move_wizard" type="object" string="Split Move"
                 attrs="{'invisible': [('show_quality_test', '=', False)]}"/>
 
-                <button name="run_inventory_adjustment" type="object" string="Adjust Inventory"
+                <button name="action_inventory_adjustment" type="object" string="Adjust Inventory"
                 attrs="{'invisible': [('show_inventory_adjustment', '=', False)]}"/>
 
             </xpath>

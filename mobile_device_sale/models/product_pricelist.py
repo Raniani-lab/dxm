@@ -12,17 +12,17 @@ class ProductPricelist(models.Model):
 
     def _compute_price_rule_get_items(self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids):
         self.ensure_one()
-        _logger.info("INSIDE _compute_price_rule_get_items()")
+        # _logger.info("INSIDE _compute_price_rule_get_items()")
         # Load all rules
         self.env['product.pricelist.item'].flush(['price', 'currency_id', 'company_id'])
         if len(products_qty_partner[0]) == 4:
             grade = products_qty_partner[0][-1] or 0
         else:
             grade = 0
-        _logger.info("GRADE PRICE LIST: %r", grade)
-        _logger.info("PRODUCT_TMPL_IDS: %r", prod_tmpl_ids)
-        _logger.info("PRODUCT_IDS: %r", prod_ids)
-        _logger.info("CATEG_IDS: %r", categ_ids)
+        # _logger.info("GRADE PRICE LIST: %r", grade)
+        # _logger.info("PRODUCT_TMPL_IDS: %r", prod_tmpl_ids)
+        # _logger.info("PRODUCT_IDS: %r", prod_ids)
+        # _logger.info("CATEG_IDS: %r", categ_ids)
         self.env.cr.execute(
             """
             SELECT
@@ -46,7 +46,7 @@ class ProductPricelist(models.Model):
         # _order from model to avoid inconstencies and undeterministic issues.
 
         item_ids = [x[0] for x in self.env.cr.fetchall()]
-        _logger.info("END _compute_price_rule_get_items()")
+        # _logger.info("END _compute_price_rule_get_items()")
         return self.env['product.pricelist.item'].browse(item_ids)
 
     def _compute_price_rule(self, products_qty_partner, date=False, uom_id=False):
@@ -59,8 +59,8 @@ class ProductPricelist(models.Model):
             :param datetime date: validity date
             :param ID uom_id: intermediate unit of measure
         """
-        _logger.info("INSIDE _compute_price_rule()")
-        _logger.info("PRODUCTS QTY PARTNER IN: %r", products_qty_partner)
+        # _logger.info("INSIDE _compute_price_rule()")
+        # _logger.info("PRODUCTS QTY PARTNER IN: %r", products_qty_partner)
         self.ensure_one()
         if not date:
             date = self._context.get('date') or fields.Date.today()
@@ -68,7 +68,7 @@ class ProductPricelist(models.Model):
         if not uom_id and self._context.get('uom'):
             uom_id = self._context['uom']
         if uom_id:
-            _logger.info("UOM PRESENT")
+            # _logger.info("UOM PRESENT")
             # rebrowse with uom if given
             products = [item[0].with_context(uom=uom_id) for item in products_qty_partner]
             products_qty_partner = [(products[index], data_struct[1], data_struct[2], data_struct[3]) for index, data_struct in enumerate(products_qty_partner)]
@@ -96,10 +96,10 @@ class ProductPricelist(models.Model):
             prod_ids = [product.id for product in products]
             prod_tmpl_ids = [product.product_tmpl_id.id for product in products]
 
-        _logger.info("PRODUCTS QTY PARTNER: %r", products_qty_partner)
+        # _logger.info("PRODUCTS QTY PARTNER: %r", products_qty_partner)
 
         items = self._compute_price_rule_get_items(products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids)
-        _logger.info("ITEMS: %r", items)
+        # _logger.info("ITEMS: %r", items)
         results = {}
         if len(products_qty_partner[0]) == 3:
             products_qty_partner[0] += (0,)
@@ -198,15 +198,15 @@ class ProductPricelist(models.Model):
                 price = cur._convert(price, self.currency_id, self.env.company, date, round=False)
 
             results[product.id] = (price, suitable_rule and suitable_rule.id or False)
-        _logger.info("PRICE RESULTS: %r", results)
-        _logger.info("END _compute_price_rule()")
+        # _logger.info("PRICE RESULTS: %r", results)
+        # _logger.info("END _compute_price_rule()")
         return results
 
     def get_products_price(self, products, quantities, partners, grade=[], date=False, uom_id=False):
         """ For a given pricelist, return price for products
         Returns: dict{product_id: product price}, in the given pricelist """
         self.ensure_one()
-        _logger.info("ARGUMENTS ON _GET_PRODUCTS_PRICE(): %s, %s, %s, %s, %s, %s" % (products, quantities, partners, grade, date, uom_id))
+        # _logger.info("ARGUMENTS ON _GET_PRODUCTS_PRICE(): %s, %s, %s, %s, %s, %s" % (products, quantities, partners, grade, date, uom_id))
         if len(grade) == 0:
             grade = [0 for x in range(len(products))]
         return {
@@ -225,7 +225,7 @@ class ProductPricelist(models.Model):
 
     def get_product_price_rule(self, product, quantity, partner, grade=0, date=False, uom_id=False):
         """ For a given pricelist, return price and rule for a given product """
-        _logger.info("GET PRODUCT PRICE RULE")
+        # _logger.info("GET PRODUCT PRICE RULE")
         self.ensure_one()
         return self._compute_price_rule([(product, quantity, partner, grade)], date=date, uom_id=uom_id)[product.id]
 

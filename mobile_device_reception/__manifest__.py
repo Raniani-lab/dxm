@@ -17,7 +17,7 @@
     'category': 'productivity',
     'version': '0.1',
 
-    'depends': ['base', 'stock', 'purchase'],
+    'depends': ['base', 'stock', 'stock_account', 'purchase', 'purchase_stock'],
 
     'data': [
         'security/ir.model.access.csv',
@@ -34,6 +34,7 @@
         'wizard/quality_test_view.xml',
         'wizard/graduation_wizard_view.xml',
         'wizard/split_stock_picking.xml',
+        'wizard/inventory_adjustment_wizard_view.xml',
         'report/product_label_template.xml',
         'report/product_label.xml',
         'views/stock_quant.xml'

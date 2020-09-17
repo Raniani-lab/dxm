@@ -72,7 +72,7 @@ class StockMoveLine(models.Model):
             taken_quantity = 0
 
         # Find a candidate move line to update or create a new one.
-        _logger.info("!!!_update_reserved_quantity() UPDATE RESERVED QTY: %r", quants)
+        # _logger.info("!!!_update_reserved_quantity() UPDATE RESERVED QTY: %r", quants)
         for reserved_quant, quantity in quants:
             to_update = self.move_line_ids.filtered(lambda ml: ml._reservation_is_updatable(quantity, reserved_quant))
             if to_update:

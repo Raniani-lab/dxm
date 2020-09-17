@@ -28,7 +28,7 @@ class StockPicking(models.Model):
             product_quants = self.env['stock.quant'].sudo()._gather(line.product_id, stock_location)
             for specs in line.mapped('move_line_specs_ids'):
                 specs_filter = specs.create_specs_filter_values()[1]
-                _logger.info("SPECS FILTER: %r", specs_filter)
+                # _logger.info("SPECS FILTER: %r", specs_filter)
                 quant_filtered = product_quants.filtered(lambda q: eval(specs_filter))
                 lots_in_quants = quant_filtered.mapped('lot_id').ids
                 lots += lots_in_quants

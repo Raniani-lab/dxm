@@ -187,7 +187,7 @@ class FunctionalTest(models.TransientModel):
                                       "You have uploaded %s lots to process %s products" % (lots_done, move_qty))
 
     def process_test(self):
-        _logger.info("RUNNING FUNCTIONAL TEST")
+        # _logger.info("RUNNING FUNCTIONAL TEST")
         if self.product_id:
             functional_test_obj = self.env['functional.quality.test']
             esthetic_test_obj = self.env['esthetic.quality.test']
@@ -240,11 +240,11 @@ class FunctionalTest(models.TransientModel):
                 esthetic_test_values = self.read(esthetic_fields)[0]
                 esthetic_test_values.pop('id')
 
-            _logger.info(functional_test_values)
-            _logger.info(esthetic_test_values)
+            # _logger.info(functional_test_values)
+            # _logger.info(esthetic_test_values)
 
             functional_obj = functional_test_obj.create(functional_test_values)
-            _logger.info("FUNCTIONAL RESULT ON WIZARD: %r", functional_obj.test_pass)
+            # _logger.info("FUNCTIONAL RESULT ON WIZARD: %r", functional_obj.test_pass)
             esthetic_obj = esthetic_test_obj.create(esthetic_test_values)
             grade_object = self.env['x_grado'].search([('x_name', '=', esthetic_obj.test_result)])
 
@@ -263,6 +263,15 @@ class FunctionalTest(models.TransientModel):
             lot_sku = product_sku + sale_regime_sku + grade_sku + color_sku
 
             _logger.info("LOTS SKU: %r", lot_sku)
+
+            piking_id = self.env.context.get('active_id')
+            picking = self.env['stock.picking'].browse(piking_id)
+            move_lines = picking.move_line_ids.filtered(
+                lambda m: m.product_id.id == self.product_id.id
+            )
+            stock_move = picking.move_lines.filtered(
+                lambda m: m.product_id.id == self.product_id.id
+            )
 
             for lot in self.new_lot_ids:
 
@@ -287,12 +296,8 @@ class FunctionalTest(models.TransientModel):
                     'x_studio_revision_funcional': True,
                     'x_studio_resultado': 'Funcional' if functional_obj.test_pass else 'Con Avería',
                 })
+                self.process_lot_stock_valuation_layer(lot, stock_move)
 
-            piking_id = self.env.context.get('active_id')
-            picking = self.env['stock.picking'].browse(piking_id)
-            move_lines = picking.move_line_ids.filtered(
-                lambda m: m.product_id.id == self.product_id.id
-            )
             processing_lot_ids = self.new_lot_ids.ids
             for move in move_lines:
                 if move.lot_id.id:
@@ -318,6 +323,27 @@ class FunctionalTest(models.TransientModel):
             return message.popup(message=text_message)
         else:
             raise ValidationError("No product selected to process in this test")
+
+    def process_lot_stock_valuation_layer(self, lot, stock_move):
+        valuation_layer = self.env['stock.valuation.layer']
+        purchase_line = stock_move.move_orig_ids.purchase_line_id
+        # todo: conditional purchase_line_id
+        values = {
+            'active': True,
+            # 'product_id': lot.product_id.id,
+            'lot_id': lot.id,
+            'company_id': purchase_line.company_id.id,
+            'quantity': 1,
+            'remaining_qty': 1,
+            'unit_cost': purchase_line.price_unit,
+            'value': purchase_line.price_unit,
+            'remaining_value': purchase_line.price_unit,
+            'stock_move_id': stock_move.id,
+            'description': 'Cost for %s - %s' % (lot.product_id.name, lot.name)
+        }
+        valuation_layer_entry = valuation_layer.create(values)
+        _logger.info("VALUATION LAYER FOR LOT %s: %s" % (lot.name, valuation_layer_entry.id))
+        return True
 
     def _print_labels(self):
         self.ensure_one()

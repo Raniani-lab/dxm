@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_inventory_adjustment_wizard" model="ir.actions.act_window">
+        <field name="name">Inventory Adjustment Wizard</field>
+        <field name="res_model">inventory.adjustment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="inventory_adjustment_wizard_view" model="ir.ui.view">
+        <field name="name">inventory.adjustment.wizard.view</field>
+        <field name="model">inventory.adjustment.wizard</field>
+        <field name="arch" type="xml">
+            <form string=" Inventory Adjustment Wizard">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="picking_id" readonly="1"/>
+                        </group>
+                        <group/>
+                    </group>
+                    <notebook>
+                        <page string="Adjustments">
+                            <field name="change_line_ids">
+                                <tree editable="bottom" options="{'no_open': True}">
+<!--                                    <field name="move_id"/>-->
+                                    <field name="source_product"/>
+                                    <field name="result_product"/>
+                                    <field name="quantity"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="run_inventory_adjustment"
+                                string="Adjust"
+                                type="object"
+                                class="oe_highlight" />
+                    <button special="cancel" name='cancel' string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
