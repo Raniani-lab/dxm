@@ -461,6 +461,8 @@ class WebsiteSale(WebsiteSale):
             kwargs.pop('brand')
         if 'search' in kwargs.keys():
             kwargs.pop('search')
+        if 'order' in kwargs.keys():
+            kwargs.pop('order')
         normalized_specs_filter = {
             x.split('_')[1] if len(x.split('_')) == 2 else '_'.join([x.split('_')[1], x.split('_')[2]]): int(kwargs[x])
             for x in kwargs}
