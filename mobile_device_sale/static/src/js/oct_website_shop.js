@@ -243,7 +243,22 @@ odoo.define('oct_website_sale.sale', function (require) {
 
         }  // END if
 
+        function replaceQueryParam(param, newval, search) {
+            var regex = new RegExp("([?;&])" + param + "[^&;]*[;&]?");
+            var query = search.replace(regex, "$1").replace(/&$/, '');
 
+            return (query.length > 2 ? query + "&" : "?") + (newval ? param + "=" + newval : '');
+        }
+
+        $(document).on('click', 'a.dropdown-item[role="menuitem"]', function (ev) {
+            ev.preventDefault();
+            var url_attr = $(this).attr('href');
+            console.log(url_attr.split('?')[1]);
+            var url_param = url_attr.split('?')[1].split('=')[1];
+            var search_url = window.location.search;
+            window.location.search = replaceQueryParam('order', url_param, search_url);
+
+        })
 
         /* Handle layout list options */
         $(document).on('click', '.o_wsale_apply_list', function(event) {
