@@ -213,10 +213,10 @@ class WebsiteSale(WebsiteSale):
             active_specs = False
             if len(post):
                 specs_post = post
-                if 'fw' in post.keys() and len(post) == 1:
+                if ('fw' in post.keys() and len(post) == 1) or ('order' in post.keys() and len(post) == 1):
                     specs_post.update(default_specs)
                 for key in post:
-                    if post[key] != '0' and key not in ['fw']:
+                    if post[key] != '0' and key not in ['fw', 'order', 'search']:
                         active_filter = True
                         if key in [
                             # 'device_network_type',
@@ -226,7 +226,7 @@ class WebsiteSale(WebsiteSale):
                             'device_lock_status',
                             'device_applications',
                             'device_grade',
-                            'device_color'
+                            # 'device_color'
                         ]:
                             active_specs = True
             else:
