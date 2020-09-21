@@ -38,8 +38,9 @@ class StockMove(models.Model):
                     'state': 'assigned'
                 })
             _logger.info("NEXT MOVE: %r", self.move_dest_ids)
-            #next_move = self.move_dest_ids[0]
-            #expected_qty = next_move.product_uom_qty
-            #next_move.write({'product_uom_qty': expected_qty - qty})
-            #self['product_uom_qty'] = self.product_uom_qty - qty
+            if self.move_dest_ids:
+                next_move = self.move_dest_ids[0]
+                expected_qty = next_move.product_uom_qty
+                next_move.write({'product_uom_qty': expected_qty - qty})
+                self['product_uom_qty'] = self.product_uom_qty - qty
             return new_move
