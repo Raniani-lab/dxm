@@ -64,7 +64,7 @@ class FunctionalTest(models.TransientModel):
         if self.lot_id and self.product_id and self.company_id:
             piking_id = self.env.context.get('active_id')
             picking = self.env['stock.picking'].browse(piking_id)
-            move_qty = picking.move_lines.filtered(lambda m: m.product_id.id == self.product_id.id).product_uom_qty
+            move_qty = picking.move_lines.filtered(lambda m: m.product_id.id == self.product_id.id)[0].product_uom_qty
             move_lot_done = picking.move_line_ids.filtered(lambda m: m.lot_id.id and m.product_id.id == self.product_id.id)
             _logger.info("LOTS DONE: %r", len(move_lot_done))
             lots_done = len(self.new_lot_ids)
