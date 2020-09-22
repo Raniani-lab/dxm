@@ -13,9 +13,6 @@
                     <field name="part_number"/>
                     <field name="capacidad"/>
                     <field name="grado"/>
-                    <field name="cant_a_mano"/>
-                    <field name="cant_prevista"/>
-                    <field name="tarifa_venta"/>
                     <field name="color"/>
                     <field name="idioma"/>
                     <field name="cargador"/>
@@ -24,8 +21,7 @@
                     <field name="bloqueo"/>
                 </group>
                 <footer>
-                <button name="print_stock_resumido" type="object" string="Imprimir Stock Resumido"  class="btn-primary"/>
-                <button name="print_stock_ampliado" type="object" string="Imprimir Stock Ampliado"  class="btn-primary"/>
+                <button name="action_export_excel_stock" type="object" string="Imprimir Stock Resumido"  class="btn-primary"/>
                 <button string="Cancel" special="cancel" class="btn-secundary"/>
                 </footer>
             </form>
