@@ -21,8 +21,9 @@
                     <field name="bloqueo"/>
                 </group>
                 <footer>
-                <button name="action_export_excel_stock" type="object" string="Imprimir Stock Resumido"  class="btn-primary"/>
-                <button string="Cancel" special="cancel" class="btn-secundary"/>
+                    <button name="action_export_excel_stock_resumido" type="object" string="Imprimir Stock Resumido"  class="btn-primary"/>
+                    <button name="action_export_excel_stock_ampliado" type="object" string="Imprimir Stock Ampliado"  class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secundary"/>
                 </footer>
             </form>
         </field>
