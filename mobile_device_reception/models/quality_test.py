@@ -48,22 +48,22 @@ class EstheticQualityTest(models.Model):
         Get esthetic test result
         :return: A, B, C, New or 14 Días
         """
-        _logger.info("GETTING ESTHETIC TEST RESULT FOR: %r", self.id)
+        # _logger.info("GETTING ESTHETIC TEST RESULT FOR: %r", self.id)
         esthetic_matrix = {}
         grades = self.env['x_grado'].search([('x_studio_is_grade_test', '=', True)])
         for grade in grades:
             esthetic_matrix.update({grade.x_studio_test_value:  grade.x_name})
-        _logger.info("Grade Matrix: %r", esthetic_matrix)
+        # _logger.info("Grade Matrix: %r", esthetic_matrix)
         display_result = int(self.display_test)
         case_result = int(self.case_test)
-        _logger.info('DISPLAY GRADE VALUE: %r', display_result)
-        _logger.info('CASE GRADE VALUE: %r', case_result)
+        # _logger.info('DISPLAY GRADE VALUE: %r', display_result)
+        # _logger.info('CASE GRADE VALUE: %r', case_result)
         max_value = max(display_result, case_result)
         grade = esthetic_matrix.get(max_value)
         days = all(record for record in [self.device_case, self.device_charger, self.cables, self.headset])
         if grade == 'A' and days:
             grade = '14 Días'  # todo: get this dynamically
-        _logger.info("TEST GRADE RESULT: %r", grade)
+        # _logger.info("TEST GRADE RESULT: %r", grade)
         return grade
 
     def name_get(self):
@@ -111,16 +111,16 @@ class FunctionalQualityTest(models.Model):
         Get functional test result
         :return: True or False
         """
-        _logger.info("GETTING FUNCTIONAL TEST RESULT FOR: %r", self.id)
+        # _logger.info("GETTING FUNCTIONAL TEST RESULT FOR: %r", self.id)
         exclude_fields = ['id', 'display_name', 'create_uid', 'create_date', 'write_uid', 'write_date',
                           '__last_update', 'test_pass', 'lot_id']
         functional_obj = self.env['functional.quality.test']
         fields_to_read = [element for element in functional_obj.fields_get_keys() if element not in exclude_fields]
-        _logger.info("FUNCTIONAL FIELDS TO READ: %r", fields_to_read)
+        # _logger.info("FUNCTIONAL FIELDS TO READ: %r", fields_to_read)
         values = self.read(fields_to_read)[0].values()
-        _logger.info("FUNCTIONAL TEST VALUES: %r", values)
+        # _logger.info("FUNCTIONAL TEST VALUES: %r", values)
         result = all(record for record in values)
-        _logger.info("FUNCTIONAL TEST RESULT: %r", result)
+        # _logger.info("FUNCTIONAL TEST RESULT: %r", result)
         return result
 
     def name_get(self):

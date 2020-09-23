@@ -187,7 +187,7 @@ class FunctionalTest(models.TransientModel):
                                       "You have uploaded %s lots to process %s products" % (lots_done, move_qty))
 
     def process_test(self):
-        _logger.info("RUNNING FUNCTIONAL TEST")
+        # _logger.info("RUNNING FUNCTIONAL TEST")
         if self.product_id:
             functional_test_obj = self.env['functional.quality.test']
             esthetic_test_obj = self.env['esthetic.quality.test']
@@ -240,11 +240,11 @@ class FunctionalTest(models.TransientModel):
                 esthetic_test_values = self.read(esthetic_fields)[0]
                 esthetic_test_values.pop('id')
 
-            _logger.info(functional_test_values)
-            _logger.info(esthetic_test_values)
+            # _logger.info(functional_test_values)
+            # _logger.info(esthetic_test_values)
 
             functional_obj = functional_test_obj.create(functional_test_values)
-            _logger.info("FUNCTIONAL RESULT ON WIZARD: %r", functional_obj.test_pass)
+            # _logger.info("FUNCTIONAL RESULT ON WIZARD: %r", functional_obj.test_pass)
             esthetic_obj = esthetic_test_obj.create(esthetic_test_values)
             grade_object = self.env['x_grado'].search([('x_name', '=', esthetic_obj.test_result)])
 

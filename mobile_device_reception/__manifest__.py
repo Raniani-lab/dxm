@@ -17,7 +17,7 @@
     'category': 'productivity',
     'version': '0.1',
 
-    'depends': ['base', 'stock', 'purchase'],
+    'depends': ['base', 'stock', 'stock_account', 'purchase', 'purchase_stock'],
 
     'data': [
         'security/ir.model.access.csv',

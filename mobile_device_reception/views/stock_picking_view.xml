@@ -9,7 +9,7 @@
             <xpath expr="//header" position="inside">
                 <field name="show_quality_test" invisible="1"/>
                 <field name="quality_test_done" invisible="1"/>
-                <field name="show_inventory_adjustment" invisible="1"/>
+                <field name="show_reception_adjustment" invisible="1"/>
 
                 <button name="run_quality_test" type="object" string="Run Quality Test"
                 attrs="{'invisible': [('show_quality_test', '=', False)]}"/>
@@ -17,8 +17,8 @@
                 <button name="split_move_wizard" type="object" string="Split Move"
                 attrs="{'invisible': [('show_quality_test', '=', False)]}"/>
 
-                <button name="run_inventory_adjustment" type="object" string="Adjust Inventory"
-                attrs="{'invisible': [('show_inventory_adjustment', '=', False)]}"/>
+                <button name="action_reception_adjustment" type="object" string="Add Reception"
+                attrs="{'invisible': [('show_reception_adjustment', '=', False)]}"/>
 
             </xpath>
         </field>
