@@ -1,0 +1,9 @@
+<odoo>
+  <data>
+    <template id="oct_inherit_report_invoice" inherit_id="sale_stock.sale_stock_report_invoice_document">
+            <xpath expr="//div[@class='page']" position="replace">
+                <spam>Esto es una prueba</spam>
+            </xpath>
+        </template>
+  </data>
+</odoo>
