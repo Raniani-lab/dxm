@@ -31,6 +31,7 @@ class Wizard_Stock(models.TransientModel):
     aplicaciones = fields.Many2one('x_terminal_aplicaciones', string="Aplicaciones")
     bloqueo = fields.Many2one('x_bloqueo', string="Bloqueo Operador")
     location_id = fields.Many2one('stock.location', string="Ubicacion", domain=[('usage', '=', 'internal')])
+    category_id = fields.Many2one('product.category', string="Categoria")
 
     def action_export_excel_stock_resumido(self):
         if not xlsxwriter:
@@ -90,6 +91,8 @@ class Wizard_Stock(models.TransientModel):
             domain = expression.AND([domain, [('lot_id.x_studio_bloqueo', '=', self.bloqueo.id)]])
         if self.location_id:
             domain = expression.AND([domain, [('location_id', '=', self.location_id.id)]])
+        if self.category_id:
+            domain = expression.AND([domain,[('product_id.categ_id','child_of',self.category_id)]])
 
         mis_stock = self.env['stock.quant'].search(domain)
 
