@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wc_wizard_gift_receipt_wc_wizard_gift_receipt,wc_wizard_gift_receipt.wc_wizard_gift_receipt,model_wc_wizard_gift_receipt_wc_wizard_gift_receipt,,1,0,0,0

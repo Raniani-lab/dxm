@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_wizard_stock" model="ir.actions.act_window">
+            <field name="name">Filtre por uno de los siguientes campos para generar su reporte de stock</field>
+            <field name="res_model">wizard.stock</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_popup_model_view_stock"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                name="Reportes de stock"
+                id="menu_datos_stock_productos"
+                action="action_wizard_stock"
+                parent="stock.menu_warehouse_report" sequence="110"/>
+
+
+    </data>
+</odoo>
