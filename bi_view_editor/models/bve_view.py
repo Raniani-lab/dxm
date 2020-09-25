@@ -241,7 +241,7 @@ class BveView(models.Model):
             'name': self.name,
             'res_model': self.model_name,
             'type': 'ir.actions.act_window',
-            'view_type': 'form',
+            # 'view_type': 'form',
             'view_mode': 'tree,graph,pivot',
             'view_id': tree_view.id,
             'context': "{'service_name': '%s'}" % self.name,
