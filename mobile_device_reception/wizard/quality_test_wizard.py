@@ -35,8 +35,8 @@ class FunctionalTest(models.TransientModel):
     lock_status = fields.Many2one(comodel_name='x_bloqueo', string="Lock Status")
     logo = fields.Many2one(comodel_name='x_logo', string="Logo")
     charger = fields.Many2one(comodel_name='x_cargador', string="Charger")
-    network_type = fields.Many2one(comodel_name='x_red', string="Network Type")
-    lang = fields.Many2one(comodel_name='x_idioma_terminal', string="Language")
+    # network_type = fields.Many2one(comodel_name='x_red', string="Network Type")
+    # lang = fields.Many2one(comodel_name='x_idioma_terminal', string="Language")
     applications = fields.Many2one(comodel_name='x_terminal_aplicaciones', string="Applications")
 
     device_condition = fields.Selection(selection=[('new', 'New'), ('used', 'Used')], default='new')
@@ -274,9 +274,9 @@ class FunctionalTest(models.TransientModel):
                     # Specifications
                     'x_studio_color': self.color.id,
                     'x_studio_bloqueo': self.lock_status.id,
-                    'x_studio_red': self.network_type.id,
+                    # 'x_studio_red': self.network_type.id,
                     'x_studio_logo': self.logo.id,
-                    'x_studio_idioma': self.lang.id,
+                    # 'x_studio_idioma': self.lang.id,
                     'x_studio_cargador': self.charger.id,
                     'x_studio_aplicaciones': self.applications.id,
                     # Test

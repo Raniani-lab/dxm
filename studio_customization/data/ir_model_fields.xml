@@ -586,7 +586,7 @@
   <record id="studio_customization.new_texto_product_te_dd6717c5-c0ef-40d5-b939-2b8fac9d5d14" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Capacidad</field>
@@ -615,7 +615,7 @@
   <record id="studio_customization.new_texto_product_te_4e4f500f-b90b-4315-a97b-09dfeb9e22bb" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Modelo</field>
@@ -644,7 +644,7 @@
   <record id="studio_customization.new_texto_product_te_d10116ba-fe90-4fee-93bd-2571c929c6d8" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Part Number</field>
@@ -674,7 +674,7 @@
   <record id="studio_customization.new_texto_product_mc_d10116ba-fe90-4fee-93bd-2571c929c7c9" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Model Code</field>
@@ -730,6 +730,8 @@
     <field name="translate" eval="False"/>
     <field name="ttype">many2one</field>
   </record>
+
+<!--  Pass to Product -->
   <record id="studio_customization.idioma_terminal_lot__a9084190-4efe-4bbe-a345-1fd7c342925f" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
@@ -759,6 +761,39 @@
     <field name="translate" eval="False"/>
     <field name="ttype">many2one</field>
   </record>
+
+<!--  IDIOMA PARA EL PRODUCTO -->
+  <record id="studio_customization.idioma_terminal_product_template__a9084190-4efe-4bbe-a345-1fd7c342925f" model="ir.model.fields" context="{'studio': True}">
+    <field name="complete_name" eval="False"/>
+    <field name="compute" eval="False"/>
+    <field name="copied" eval="True"/>
+    <field name="depends" eval="False"/>
+    <field name="domain">[]</field>
+    <field name="field_description">Idioma</field>
+    <field name="groups" eval="[(6, 0, [])]"/>
+    <field name="help" eval="False"/>
+    <field name="index" eval="False"/>
+    <field name="model">product.template</field>
+    <field name="model_id" ref="product.model_product_template"/>
+    <field name="name">x_studio_idioma_producto</field>
+    <field name="on_delete">set null</field>
+    <field name="readonly" eval="False"/>
+    <field name="related" eval="False"/>
+    <field name="relation">x_idioma_terminal</field>
+    <field name="relation_field" eval="False"/>
+    <field name="relation_table" eval="False"/>
+    <field name="required" eval="False"/>
+    <field name="selectable" eval="True"/>
+    <field name="selection" eval="False"/>
+    <field name="size" eval="False"/>
+    <field name="state">manual</field>
+    <field name="store" eval="True"/>
+    <field name="tracking" eval="False"/>
+    <field name="translate" eval="False"/>
+    <field name="ttype">many2one</field>
+  </record>
+
+
 
  <!-- <record id="studio_customization.new_campo_relacionad_7229fb29-d9d3-4922-b145-a3cf73284550" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
@@ -848,6 +883,7 @@
     <field name="translate" eval="False"/>
     <field name="ttype">many2one</field>
   </record>
+<!--  To Product Template-->
   <record id="studio_customization.red_lot_serial_606599e1-dc3b-49c2-809b-af7ace28b9de" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
@@ -877,6 +913,39 @@
     <field name="translate" eval="False"/>
     <field name="ttype">many2one</field>
   </record>
+
+
+  <record id="studio_customization.red_product_606599e1-dc3b-49c2-809b-af7ace28b9de" model="ir.model.fields" context="{'studio': True}">
+    <field name="complete_name" eval="False"/>
+    <field name="compute" eval="False"/>
+    <field name="copied" eval="True"/>
+    <field name="depends" eval="False"/>
+    <field name="domain">[]</field>
+    <field name="field_description">Red</field>
+    <field name="groups" eval="[(6, 0, [])]"/>
+    <field name="help" eval="False"/>
+    <field name="index" eval="False"/>
+    <field name="model">product.template</field>
+    <field name="model_id" ref="product.model_product_template"/>
+    <field name="name">x_studio_red_producto</field>
+    <field name="on_delete">set null</field>
+    <field name="readonly" eval="False"/>
+    <field name="related" eval="False"/>
+    <field name="relation">x_red</field>
+    <field name="relation_field" eval="False"/>
+    <field name="relation_table" eval="False"/>
+    <field name="required" eval="False"/>
+    <field name="selectable" eval="True"/>
+    <field name="selection" eval="False"/>
+    <field name="size" eval="False"/>
+    <field name="state">manual</field>
+    <field name="store" eval="True"/>
+    <field name="tracking" eval="False"/>
+    <field name="translate" eval="False"/>
+    <field name="ttype">many2one</field>
+  </record>
+
+
   <record id="studio_customization.cargador_lot_serial_645fd452-ea00-420e-ad2e-07ca2a43ee68" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
@@ -1031,7 +1100,7 @@
   <record id="studio_customization.capacidad_product_te_a295f597-1474-461b-aa56-56ac0e9739e5" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Capacidad</field>
@@ -2432,7 +2501,7 @@
    <record id="studio_customization.new_texto_product_te_6c26bca1-d59a-4c5f-b7c4-97d34da3e744" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Condición</field>
@@ -2464,7 +2533,7 @@
   <record id="studio_customization.pantalla_product_tem_1a53b2c2-6971-47c6-9063-e6ec3b20600b" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Pantalla</field>
@@ -2494,7 +2563,7 @@
   <record id="studio_customization.sim_product_template_5502d841-cfd1-447c-b7f6-5d911b8e60ba" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Tipo de SIM</field>
@@ -2524,7 +2593,7 @@
   <record id="studio_customization.memoria_ram_product__defb7c73-d121-4ec2-9329-45ef31c4d59f" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Memoria RAM</field>
@@ -2554,7 +2623,7 @@
   <record id="studio_customization.lanzamiento_terminal_147d35a9-dde8-4345-8535-e7476db1dca9" model="ir.model.fields" context="{'studio': True}">
     <field name="complete_name" eval="False"/>
     <field name="compute" eval="False"/>
-    <field name="copied" eval="False"/>
+    <field name="copied" eval="True"/>
     <field name="depends" eval="False"/>
     <field name="domain">[]</field>
     <field name="field_description">Fecha de Lanzamiento</field>

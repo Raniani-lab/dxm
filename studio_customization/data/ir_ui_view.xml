@@ -492,6 +492,8 @@
               <field name="x_studio_fecha_de_lanzamiento" string="Fecha de Lanzamiento"/>
               <field name="x_studio_memoria_ram" string="Memoria RAM"/>
               <field name="x_studio_tipo_de_sim" string="Tipo de SIM"/>
+              <field name="x_studio_red_producto"/>
+              <field name="x_studio_idioma_producto" string="Idioma"/>
               <field name="x_studio_display"/>
               <field name="x_studio_condition" string="Condición"/>
             </group>
@@ -535,9 +537,9 @@
             <group name="studio_group_3TGcI_left" string="Especificaciones del Número de Serie">
               <field name="x_studio_color"/>
               <field name="x_studio_bloqueo"/>
-              <field name="x_studio_red"/>
+              <!--<field name="x_studio_red"/>
+              <field name="x_studio_idioma" string="Idioma"/>-->
               <field name="x_studio_logo" string="Logo"/>
-              <field name="x_studio_idioma" string="Idioma"/>
               <field name="x_studio_cargador"/>
               <field name="x_studio_aplicaciones"/>
 <!--              <field name="x_studio_memoria_ram" string="Memoria RAM"/>

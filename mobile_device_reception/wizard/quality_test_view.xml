@@ -29,8 +29,8 @@
                             <field name='lock_status'/>
                             <field name='logo' string="Welcome Logo"/>
                             <field name='charger' string="SPEC"/>
-                            <field name='network_type'/>
-                            <field name='lang'/>
+<!--                            <field name='network_type'/>-->
+<!--                            <field name='lang'/>-->
                             <field name='applications'/>
                         </group>
                     </group>
