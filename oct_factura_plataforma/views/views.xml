@@ -14,18 +14,28 @@
           <t t-call="web.html_container">
           <t t-foreach="docs" t-as="o">
             <t t-call="web.external_layout">
-                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
                 <!--t t-if="' AMAZON ' in o.parent_id.name">
                       <span>OK</span>
                 </t>
                 <t t-else=""></t-->
+                <t t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)"><spam>Entre arriba</spam>
                     <t t-set="address">
-                    <address t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                    <address t-field ="o.partner_id.contact" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
                         <div t-if="o.partner_id.vat" class="mt16">
                             <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label" id="inv_tax_id_label"/>
                             <t t-else="">Tax ID</t>: <span t-field="o.partner_id.vat"/></div>
-
+                    </t>
+                    </t>
+                   <t t-else=""><spam>Entre abajo</spam>
+                       <t t-set="address">
+                        <address t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                            <div t-if="o.partner_id.vat" class="mt16">
+                                <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label" id="inv_tax_id_label"/>
+                                <t t-else="">Tax ID</t>: <span t-field="o.partner_id.vat"/></div>
+                    </t>
                 </t>
+
 
                 <div class="page">
                     <h2>
@@ -55,9 +65,9 @@
                             <strong>Customer Code:</strong>
                             <p class="m-0" t-field="o.partner_id.ref"/>
                         </div>
-                        <div class="col-auto mw-100 mb-2" t-if="o.ref" name="reference">
-                            <strong>Reference:</strong>
-                            <p class="m-0" t-field="o.ref"/>
+                        <div class="col-auto mw-100 mb-2" t-if="o.invoice_incoterm_id" groups="sale_stock.group_display_incoterm" name="invoice_incoterm_id">
+                            <strong>Incoterm:</strong>
+                            <p class="m-0" t-field="o.invoice_incoterm_id.code"/>
                         </div>
                     </div>
 
@@ -181,9 +191,86 @@
                                         </td>
                                     </tr>
                                 </table>
+
                             </div>
                         </div>
                     </div>
+                    <t t-set="lotes" t-value="o.get_invoiced_lot_values()"/>
+                        <t t-if="lotes">
+
+                            <table groups="sale_stock.group_lot_on_invoice" class="table table-sm"
+                                   style="width: 100%;"
+                                   name="invoice_snln_table">
+                                <thead>
+                                    <tr>
+                                        <th><span>Product</span></th>
+                                        <th class="text-center"><span>Color</span></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="contador" t-value="0"/>
+                                    <t t-set="color" t-value=""/>
+                                    <t t-set="nombre" t-value=""/>
+
+
+                                    <t t-foreach="lotes" t-as="snln_line">
+
+                                        <t t-if="contador == 0">
+                                            <t t-set="nombre" t-value="snln_line['product_name']"/>
+                                            <t t-set="color" t-value="snln_line['product_color']"/>
+
+                                            <t t-set="contador" t-value="contador + 1"/>
+                                        </t>
+
+                                        <t t-else="">
+                                            <t t-if="snln_line['product_name'] == nombre">
+                                                <t t-if="snln_line['product_color'] == color">
+                                                    <t t-set="imei" t-value="imei + ', ' + snln_line['lot_name']"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <tr>
+                                                        <td style="width: 30%">
+                                                            <t t-esc="nombre"/>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <t t-esc="color"/>
+                                                            <t t-set="color" t-value=""/>
+                                                            <t t-set="color" t-value="snln_line['product_color']"/>
+                                                        </td>
+
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <tr>
+                                                    <td style="width: 30%">
+                                                        <t t-esc="nombre"/>
+                                                        <t t-set="nombre" t-value=""/>
+                                                        <t t-set="nombre" t-value="snln_line['product_name']"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <t t-esc="color"/>
+                                                        <t t-set="color" t-value=""/>
+                                                        <t t-set="color" t-value="snln_line['product_color']"/>
+                                                    </td>
+
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <tr>
+                                        <td style="width: 30%">
+                                            <t t-esc="nombre"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="color"/>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                     </t>
                     <p t-if="o.type in ('out_invoice', 'in_refund')">
                         Please use the following communication for your payment : <b><span t-field="o.invoice_payment_ref"/></b>
                     </p>
@@ -206,9 +293,61 @@
                         </p>
                     </div>
                 </div>
-            </t>
+
           </t>
           </t>
+        </t>
         </template>
+      <template id="report_invoice_document_amazon" inherit_id="oct_factura_plataforma.oct_report_amazon" primary="True">
+            <xpath expr="//div[@id='total']/div/table" position="inside">
+                <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
+                <t t-foreach="payments_vals" t-as="payment_vals">
+                    <tr>
+                        <td>
+                            <i class="oe_form_field text-right oe_payment_label">Paid on <t t-esc="payment_vals['date']" t-options='{"widget": "date"}'/></i>
+                        </td>
+                        <td class="text-right">
+                            <span t-esc="payment_vals['amount']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+                <t t-if="len(payments_vals) > 0">
+                    <tr class="border-black">
+                        <td><strong>Amount Due</strong></td>
+                        <td class="text-right">
+                             <span t-field="o.amount_residual"/>
+                        </td>
+                    </tr>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="report_invoice_document_inherit_sale" inherit_id="oct_factura_plataforma.oct_report_amazon">
+            <xpath expr="//address" position="attributes">
+                <attribute name="groups">!sale.group_delivery_invoice_address</attribute>
+            </xpath>
+            <xpath expr="//address" position="before">
+                <t t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)">
+                    <t t-set="information_block">
+                        <div groups="sale.group_delivery_invoice_address">
+                            <strong>Shipping Address:</strong>
+                            <div t-field="o.partner_shipping_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        </div>
+                    </t>
+                </t>
+                <div t-field="o.partner_id"
+                    t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' groups="sale.group_delivery_invoice_address"/>
+            </xpath>
+        </template>
+      <!-->Se agrega el número de IVA de cada país en el que estemos registrados. <-->
+      <template id="report_invoice_document" inherit_id="oct_factura_plataforma.oct_report_amazon">
+        <xpath expr="//address" position="after">
+            <t t-if="o.partner_id.country_id.code == 'FR'">IVA: 41838226124</t>
+            <t t-elif="o.partner_id.country_id.code == 'IT' ">IVA: 00186059994</t>
+            <t t-elif="o.partner_id.country_id.code == 'DE'">IVA: 323738038</t>
+            <t t-elif="o.partner_id.country_id.code == 'BE'">IVA: 0735979283</t>
+        </xpath>
+    </template>
   </data>
 </odoo>

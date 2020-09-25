@@ -1,0 +1,229 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* oct_factura_plataforma
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 15:07+0000\n"
+"PO-Revision-Date: 2020-09-25 11:43-0400\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Language: fr_FR\n"
+
+#. module: oct_factura_plataforma
+#: model:ir.actions.report,print_report_name:oct_factura_plataforma.account_invoices_amazon
+msgid "(object._get_report_base_filename())"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid ""
+"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Amount</"
+"span>\n"
+"                                    <span groups=\"account."
+"group_show_line_subtotals_tax_included\">Total Price</span>"
+msgstr ""
+"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Montant</"
+"span>\n"
+"                                    <span groups=\"account."
+"group_show_line_subtotals_tax_included\">Prix ​​total</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Color</span>"
+msgstr "<span>Couleur</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Description</span>"
+msgstr "<span>La description</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Disc.%</span>"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Product</span>"
+msgstr "<span>Produit</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Quantity</span>"
+msgstr "<span>Quantité</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Source Document</span>"
+msgstr "<span>Document source</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Taxes</span>"
+msgstr "<span>Les impôts</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<span>Unit Price</span>"
+msgstr "<span>Prix ​​unitaire</span>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong class=\"mr16\">Subtotal</strong>"
+msgstr "<strong class=\"mr16\">Total</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid ""
+"<strong class=\"text-center\">Scan me with your banking app.</strong><br/"
+"><br/>"
+msgstr ""
+"<strong class=\"text-center\">Scannez-moi avec votre application "
+"bancaire.</strong><br/><br/>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid ""
+"<strong class=\"text-center\">The SEPA QR Code informations are not set "
+"correctly.</strong><br/>"
+msgstr ""
+"<strong class=\"text-center\">Les informations du code QR SEPA ne sont "
+"pas définies correctement.</strong><br/>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document_amazon
+msgid "<strong>Amount Due</strong>"
+msgstr "<strong>Montant dû</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Customer Code:</strong>"
+msgstr "<strong>Code client:</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Due Date:</strong>"
+msgstr "<strong>Date d'échéance:</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Incoterm:</strong>"
+msgstr "<strong>Incoterm:</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Invoice Date:</strong>"
+msgstr "<strong>Date de la facture:</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document_inherit_sale
+msgid "<strong>Shipping Address:</strong>"
+msgstr "<strong>Adresse de livraison:</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Source:</strong>"
+msgstr "<strong>La source:</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Subtotal</strong>"
+msgstr "<strong class=\"mr16\">SubTotal</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "<strong>Total</strong>"
+msgstr "<strong>Total</strong>"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Cancelled Invoice"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Credit Note"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Draft Invoice"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Entre abajo"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Entre arriba"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model:ir.actions.report,name:oct_factura_plataforma.account_invoices_amazon
+msgid "Factura para clientes AMAZON"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document
+msgid "IVA: 00186059994"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document
+msgid "IVA: 0735979283"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document
+msgid "IVA: 323738038"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document
+msgid "IVA: 41838226124"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Invoice"
+msgstr "Facture d'achat"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.report_invoice_document_amazon
+msgid "Paid on"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Please use the following communication for your payment :"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Tax ID"
+msgstr "Numéro ID"
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Vendor Bill"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "Vendor Credit Note"
+msgstr ""
+
+#. module: oct_factura_plataforma
+#: model_terms:ir.ui.view,arch_db:oct_factura_plataforma.oct_report_amazon
+msgid "on"
+msgstr ""
