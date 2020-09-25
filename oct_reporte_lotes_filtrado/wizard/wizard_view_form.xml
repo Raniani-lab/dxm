@@ -24,6 +24,7 @@
                 <footer>
                     <button name="action_export_excel_stock_resumido" type="object" string="Exportar Stock Resumido"  class="btn-primary"/>
                     <button name="action_export_excel_stock_ampliado" type="object" string="Exportar Stock Ampliado"  class="btn-primary"/>
+                    <button name="action_export_excel_stock_compras" type="object" string="Exportar Stock de Compras"  class="btn-primary"/>
                     <button string="Cancel" special="cancel" class="btn-secundary"/>
                 </footer>
             </form>

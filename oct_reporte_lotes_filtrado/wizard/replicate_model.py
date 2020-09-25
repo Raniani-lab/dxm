@@ -20,7 +20,7 @@ class Wizard_Stock(models.TransientModel):
     marca = fields.Many2one('product.brand', string="Marca")
     modelo = fields.Char("Escriba el Modelo")
     part_number = fields.Char("Escriba el Part Number")
-    capacidad = fields.Many2one('x_capacidad', string="Capacidad de Almacenamiento")
+    capacidad = fields.Many2one('x_capacidad', string="Capacidad")
     grado = fields.Many2one('x_grado', string="Grado")
     cant_prevista = fields.Float("Cantidad Prevista")
     tarifa_venta = fields.Float("Tarifa de Venta")
@@ -32,12 +32,15 @@ class Wizard_Stock(models.TransientModel):
     bloqueo = fields.Many2one('x_bloqueo', string="Bloqueo Operador")
     location_id = fields.Many2one('stock.location', string="Ubicacion", domain=[('usage', '=', 'internal')])
 
+    #FUNCION ENCARGADA DE EXPORTARME UN STOCK RESUMIDO DE STOCK.QUANT EN UN EXCEL
     def action_export_excel_stock_resumido(self):
         if not xlsxwriter:
             raise UserError(_("The Python library xlsxwriter is installed. Contact your system administrator"))
 
+        #CONFIGURO MI EXCEL CON LA EXTENSION xlswriter
         file_path = tempfile.mktemp(suffix='.xlsx')
         workbook = xlsxwriter.Workbook(file_path)
+        #ESTILOS QUE LE VOY A APLICAR A MI EXCEL EN LA CABECERA DE LAS COLUMNAS Y EN LAS CELDAS
         styles = {
             'main_header_style': workbook.add_format({
                 'bold': True,
@@ -61,7 +64,10 @@ class Wizard_Stock(models.TransientModel):
 
         list_to_order = []
 
+        #DOMINIO QUE VOY A UTILIZAR PARA OBTENER LOS STOCK.QUANT EN DEPENDENCIA DE LOS CAMPOS DEL WIZARD QUE SE MARQUEN
         domain = []
+
+        #ME COMIENZO A RECORRER LOS CAMPOS PARA VERIFICAR CUAL ME VIENE CON VALOR
 
         if self.producto:
             domain = expression.AND([domain, [('product_id', '=', self.producto.id)]])
@@ -91,12 +97,18 @@ class Wizard_Stock(models.TransientModel):
         if self.location_id:
             domain = expression.AND([domain, [('location_id', '=', self.location_id.id)]])
 
+
+        #mis_stock me va a obtener todos los stock.quant que me coincidan con el dominio
         mis_stock = self.env['stock.quant'].search(domain)
 
+        #product_ids vienen siendo todos los ids de los productos de mis_stock
         product_ids = mis_stock.mapped('product_id.id')
 
+        #me recorro todos los ids de los productos de mis stock.quants
         for product_id in product_ids:
             stock_by_grades = mis_stock.filtered(lambda x: x.product_id.id == product_id).mapped('lot_id.x_studio_revision_grado.id')
+
+            #Agrupo por grado y me recorro todos esos grados en donde inserto en list_to_order todos los resultado agrupados por producto y por grado
             for stock_by_grade in stock_by_grades:
                 grade = self.env['x_grado'].browse(stock_by_grade)
                 producto = self.env['product.product'].browse(product_id)
@@ -119,6 +131,7 @@ class Wizard_Stock(models.TransientModel):
 
         write_column = 1
 
+        #Renderizo en el excel lo que me trae list_to_order
         for data in list_to_order:
             worksheet.write(write_column, 1, data['producto'], styles.get("main_data_style"))
             worksheet.write(write_column, 2, data['marca'], styles.get("main_data_style"))
@@ -150,6 +163,7 @@ class Wizard_Stock(models.TransientModel):
         }
         return action
 
+    #Funcion que me exporta mi reporte de stock ampliado
     def action_export_excel_stock_ampliado(self):
         if not xlsxwriter:
             raise UserError(_("The Python library xlsxwriter is installed. Contact your system administrator"))
@@ -243,6 +257,118 @@ class Wizard_Stock(models.TransientModel):
             worksheet.write(write_column, 10, data['logo'], styles.get("main_data_style"))
             worksheet.write(write_column, 11, data['aplicaciones'], styles.get("main_data_style"))
             worksheet.write(write_column, 12, data['bloqueo'], styles.get("main_data_style"))
+
+            write_column = write_column + 1
+
+        workbook.close()
+
+        with open(file_path, 'rb') as r:
+            xls_file = base64.b64encode(r.read())
+        att_vals = {
+            'name': u"{}.xlsx".format("Reportes de stock"),
+            'type': 'binary',
+            'datas': xls_file,
+        }
+        attachment_id = self.env['ir.attachment'].create(att_vals)
+        self.env.cr.commit()
+        action = {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/{}?download=true'.format(attachment_id.id, ),
+            'target': 'self',
+        }
+        return action
+
+    #Funcion que me exporta mi stock de compras
+    def action_export_excel_stock_compras(self):
+        if not xlsxwriter:
+            raise UserError(_("The Python library xlsxwriter is installed. Contact your system administrator"))
+
+        file_path = tempfile.mktemp(suffix='.xlsx')
+        workbook = xlsxwriter.Workbook(file_path)
+        styles = {
+            'main_header_style': workbook.add_format({
+                'bold': True,
+                'font_size': 11,
+                'border': 1,
+            }),
+            'main_data_style': workbook.add_format({
+                'font_size': 11,
+                'border': 1,
+            }),
+        }
+        worksheet = workbook.add_worksheet(u"Reporte de Stock de Compras.xlsx")
+        cur_column = 1
+        for column in [("Producto"), ("Marca"), ("Grado Preliminar"), ("Unidades Pedidas"), ("Unidades Confirmadas"), ("Unidades Recepcionadas")]:
+            worksheet.write(0, cur_column, column, styles.get("main_header_style"))
+            col_letter = chr(cur_column + 97).upper()
+            column_width = cur_column == 0 and 35 or 30
+            worksheet.set_column('{c}:{c}'.format(c=col_letter), column_width)
+            cur_column += 1
+
+        list_to_order = []
+
+        domain = []
+
+        if self.producto:
+            domain = expression.AND([domain, [('product_id', '=', self.producto.id)]])
+        if self.marca:
+            domain = expression.AND([domain, [('product_id.product_brand_id', '=', self.marca.id)]])
+        if self.modelo:
+            domain = expression.AND([domain, [('product_id.x_studio_modelo', '=', self.modelo)]])
+        if self.part_number:
+            domain = expression.AND([domain, [('product_id.x_studio_part_number', '=', self.part_number)]])
+        if self.capacidad:
+            domain = expression.AND(
+                [domain, [('product_id.x_studio_capacidad_de_almacenamiento.id', '=', self.capacidad.id)]])
+        if self.grado:
+            domain = expression.AND([domain, [('revision_grado', '=', self.grado.id)]])
+        if self.color:
+            domain = expression.AND([domain, [('color', '=', self.color.id)]])
+        if self.idioma:
+            domain = expression.AND([domain, [('idioma', '=', self.idioma.id)]])
+        if self.cargador:
+            domain = expression.AND([domain, [('cargador', '=', self.cargador.id)]])
+        if self.logo:
+            domain = expression.AND([domain, [('logo', '=', self.logo.id)]])
+        if self.aplicaciones:
+            domain = expression.AND([domain, [('aplicaciones', '=', self.aplicaciones.id)]])
+        if self.bloqueo:
+            domain = expression.AND([domain, [('lot_id.x_studio_bloqueo', '=', self.bloqueo.id)]])
+        if self.location_id:
+            domain = expression.AND([domain, [('location_id', '=', self.location_id.id)]])
+
+        mis_stock = self.env['stock.quant'].search(domain)
+
+        product_ids = mis_stock.mapped('product_id.id')
+
+        for product_id in product_ids:
+            purchase_by_products = self.env['purchase.order.line'].search([('product_id.id','=',product_id)])
+            stock_by_grades = purchase_by_products.filtered(lambda x: x.product_id.id == product_id).mapped('x_studio_grado_preliminar.id')
+            for stock_by_grade in stock_by_grades:
+                grade = self.env['x_grado'].browse(stock_by_grade)
+                producto = self.env['product.product'].browse(product_id)
+                unidades_pedidas = sum(purchase_by_products.filtered(lambda x: x.product_id.id == product_id and x.x_studio_grado_preliminar.id == stock_by_grade and x.order_id.state == 'purchase').mapped('product_qty'))
+                unidades_confirmadas = sum(purchase_by_products.filtered(lambda x: x.product_id.id == product_id and x.x_studio_grado_preliminar.id == stock_by_grade and x.order_id.state == 'done' and x.order_id.picking_ids == False).mapped('product_qty'))
+                unidades_recepcionadas = sum(purchase_by_products.filtered(lambda x: x.product_id.id == product_id and x.x_studio_grado_preliminar.id == stock_by_grade and x.order_id.state == 'done').mapped('product_qty'))
+
+                list_to_order.append({
+                    'producto': producto.name,
+                    'marca': producto.product_brand_id.name,
+                    'grado': grade.x_name,
+                    'unidades_pedidas': unidades_pedidas,
+                    'unidades_confirmadas': unidades_confirmadas,
+                    'unidades_recepcionadas': unidades_recepcionadas,
+                })
+
+        write_column = 1
+
+        for data in list_to_order:
+            worksheet.write(write_column, 1, data['producto'], styles.get("main_data_style"))
+            worksheet.write(write_column, 2, data['marca'], styles.get("main_data_style"))
+            worksheet.write(write_column, 3, data['grado'], styles.get("main_data_style"))
+            worksheet.write(write_column, 4, data['unidades_pedidas'], styles.get("main_data_style"))
+            worksheet.write(write_column, 5, data['unidades_confirmadas'], styles.get("main_data_style"))
+            worksheet.write(write_column, 6, data['unidades_recepcionadas'], styles.get("main_data_style"))
 
             write_column = write_column + 1
 
