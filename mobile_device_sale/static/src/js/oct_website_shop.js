@@ -250,7 +250,7 @@ odoo.define('oct_website_sale.sale', function (require) {
             return (query.length > 2 ? query + "&" : "?") + (newval ? param + "=" + newval : '');
         }
 
-        $(document).on('click', 'a.dropdown-item[role="menuitem"]', function (ev) {
+        $(document).on('click', 'div.dropdown-menu > a.dropdown-item[role="menuitem"]', function (ev) {
             ev.preventDefault();
             var url_attr = $(this).attr('href');
             console.log(url_attr.split('?')[1]);
